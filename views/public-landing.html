@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>SafeQR - Smart Vehicle Privacy & Emergency Relay Shield</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-page: #F8FAFC;
+      --bg-card: #FFFFFF;
+      --border-subtle: #E2E8F0;
+      --border-medium: #CBD5E1;
+      --text-main: #0F172A;
+      --text-muted: #64748B;
+      --text-light: #94A3B8;
+      --primary-dark: #0F172A;
+      --primary-accent: #2563EB;
+      --accent-green: #059669;
+      --accent-amber: #D97706;
+      --accent-yellow: #FFD600;
+      --accent-red: #EF4444;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.03);
+      --shadow-lg: 0 12px 30px rgba(0,0,0,0.08), 0 4px 10px rgba(0,0,0,0.04);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; }
+    body { background-color: var(--bg-page); color: var(--text-main); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+
+    /* Navigation */
+    .nav { position: sticky; top: 0; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-subtle); z-index: 100; }
+    .nav-container { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; }
+    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text-main); }
+    .brand-badge { background: var(--accent-yellow); color: var(--text-main); font-weight: 900; font-size: 13px; padding: 5px 12px; border-radius: 6px; letter-spacing: 0.5px; border: 1px solid rgba(0,0,0,0.1); }
+    .brand-title { font-size: 19px; font-weight: 900; letter-spacing: -0.5px; }
+    .brand-tag { font-size: 11px; background: #EEF2F6; color: var(--text-muted); font-weight: 700; padding: 3px 8px; border-radius: 4px; }
+    
+    .nav-links { display: flex; align-items: center; gap: 24px; }
+    .nav-link { color: var(--text-muted); text-decoration: none; font-size: 13px; font-weight: 700; transition: color 0.2s; }
+    .nav-link:hover { color: var(--text-main); }
+    .btn-admin { background: #F1F5F9; color: var(--text-main); border: 1px solid var(--border-medium); padding: 8px 16px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-admin:hover { background: #E2E8F0; }
+    .btn-buy-nav { background: var(--primary-dark); color: #FFFFFF; padding: 8px 18px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 800; text-decoration: none; transition: transform 0.1s; }
+    .btn-buy-nav:hover { background: #1E293B; transform: translateY(-1px); }
+
+    /* Hero Section */
+    .hero { max-width: 1200px; margin: 0 auto; padding: 60px 20px 40px; display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 50px; align-items: center; }
+    @media (max-width: 900px) { .hero { grid-template-columns: 1fr; padding: 30px 16px; gap: 30px; } }
+
+    .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: #ECFDF5; color: var(--accent-green); font-size: 12px; font-weight: 800; padding: 6px 14px; border-radius: 30px; margin-bottom: 18px; border: 1px solid #A7F3D0; }
+    .hero-title { font-size: 44px; font-weight: 900; line-height: 1.15; letter-spacing: -1px; margin-bottom: 16px; color: var(--text-main); }
+    .hero-title span { color: var(--primary-accent); }
+    .hero-sub { font-size: 16px; color: var(--text-muted); line-height: 1.6; margin-bottom: 28px; max-width: 540px; }
+
+    .hero-cta-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 28px; }
+    .btn-primary { background: var(--primary-dark); color: #FFFFFF; font-size: 15px; font-weight: 800; padding: 14px 28px; border-radius: var(--radius-md); text-decoration: none; display: inline-flex; align-items: center; gap: 8px; box-shadow: var(--shadow-md); border: none; cursor: pointer; transition: all 0.2s; }
+    .btn-primary:hover { background: #1E293B; transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+    .btn-secondary { background: #FFFFFF; color: var(--text-main); font-size: 14px; font-weight: 800; padding: 13px 22px; border-radius: var(--radius-md); text-decoration: none; border: 1px solid var(--border-medium); display: inline-flex; align-items: center; gap: 8px; }
+    .btn-secondary:hover { background: #F8FAFC; }
+
+    .trust-bullets { display: flex; align-items: center; gap: 20px; font-size: 12px; font-weight: 700; color: var(--text-muted); flex-wrap: wrap; }
+    .trust-bullet { display: flex; align-items: center; gap: 6px; }
+
+    /* Interactive Live Decal Preview Card */
+    .decal-preview-wrapper { position: relative; }
+    .decal-card { background: #121316; border: 3px solid #FFD600; border-radius: 20px; padding: 26px; box-shadow: 0 20px 40px rgba(0,0,0,0.18); position: relative; overflow: hidden; color: #FFFFFF; max-width: 420px; margin: 0 auto; }
+    .decal-holo-stripe { position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, #FF6B00, #FFD600, #10B981, #3B82F6, #EC4899); }
+    .decal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; margin-top: 6px; }
+    .decal-brand { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 900; color: #FFD600; letter-spacing: 1px; }
+    .decal-shield-badge { font-size: 10px; background: #242832; color: #10B981; font-weight: 800; padding: 3px 8px; border-radius: 4px; border: 1px solid #374151; }
+    
+    .decal-body { display: grid; grid-template-columns: 140px 1fr; gap: 18px; align-items: center; }
+    .qr-box { background: #FFFFFF; border-radius: 12px; padding: 10px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+    .qr-box canvas, .qr-box img { width: 100%; height: auto; display: block; }
+    .qr-scan-tag { font-size: 8px; font-weight: 900; color: #121316; margin-top: 4px; letter-spacing: 0.5px; }
+
+    .decal-info { display: flex; flex-direction: column; gap: 8px; }
+    .decal-plate-box { background: #20242D; border: 1px solid #FFD600; border-radius: 8px; padding: 8px 10px; text-align: center; }
+    .decal-plate-title { font-size: 9px; font-weight: 800; color: #FFD600; letter-spacing: 1px; }
+    .decal-plate-val { font-size: 18px; font-weight: 900; color: #FFFFFF; letter-spacing: 1.5px; }
+    .decal-model-val { font-size: 11px; color: #9CA3AF; font-weight: 700; }
+    .decal-safety-row { display: flex; gap: 6px; margin-top: 4px; }
+    .decal-mini-badge { flex: 1; background: #1B1E24; border: 1px solid #374151; border-radius: 6px; padding: 5px; text-align: center; font-size: 9px; font-weight: 800; color: #D1D5DB; }
+
+    .decal-footer { margin-top: 18px; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.15); display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: #9CA3AF; }
+    .decal-ivrtag { color: #10B981; font-weight: 800; }
+
+    /* Bento Features Grid */
+    .section-container { max-width: 1200px; margin: 0 auto; padding: 60px 20px; }
+    .section-header { text-align: center; margin-bottom: 40px; }
+    .section-tag { font-size: 12px; font-weight: 800; color: var(--primary-accent); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+    .section-title { font-size: 32px; font-weight: 900; letter-spacing: -0.5px; color: var(--text-main); margin-bottom: 10px; }
+    .section-desc { font-size: 15px; color: var(--text-muted); max-width: 600px; margin: 0 auto; }
+
+    .bento-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+    .bento-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 28px; box-shadow: var(--shadow-sm); transition: transform 0.2s, box-shadow 0.2s; }
+    .bento-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--border-medium); }
+    .bento-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 18px; }
+    .bento-icon-blue { background: #EFF6FF; color: var(--primary-accent); }
+    .bento-icon-green { background: #ECFDF5; color: var(--accent-green); }
+    .bento-icon-amber { background: #FFFBEB; color: var(--accent-amber); }
+    .bento-icon-red { background: #FEF2F2; color: var(--accent-red); }
+    .bento-title { font-size: 17px; font-weight: 800; margin-bottom: 8px; color: var(--text-main); }
+    .bento-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+    /* Order / Customization Form Card */
+    .order-section { background: #FFFFFF; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); padding: 60px 20px; }
+    .form-container { max-width: 820px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 20px; box-shadow: var(--shadow-lg); overflow: hidden; }
+    
+    .form-header { background: var(--primary-dark); color: #FFFFFF; padding: 28px 32px; display: flex; justify-content: space-between; align-items: center; }
+    .form-header-title { font-size: 20px; font-weight: 800; }
+    .form-header-sub { font-size: 12px; color: #94A3B8; font-weight: 600; margin-top: 2px; }
+
+    .stepper { display: flex; background: #F1F5F9; border-bottom: 1px solid var(--border-subtle); }
+    .step-item { flex: 1; padding: 14px 10px; text-align: center; font-size: 12px; font-weight: 800; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
+    .step-item.active { color: var(--primary-accent); background: #FFFFFF; border-bottom-color: var(--primary-accent); }
+    .step-item.completed { color: var(--accent-green); }
+
+    .form-body { padding: 32px; }
+    .form-step { display: none; }
+    .form-step.active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
+    .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 18px; }
+    @media (max-width: 650px) { .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; gap: 14px; } }
+
+    .field-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+    .field-label { font-size: 12px; font-weight: 800; color: var(--text-main); }
+    .field-label span { color: var(--accent-red); }
+    .field-input, .field-select, .field-textarea { background: #FFFFFF; border: 1.5px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 14px; font-weight: 600; color: var(--text-main); outline: none; transition: border-color 0.2s; width: 100%; }
+    .field-input:focus, .field-select:focus, .field-textarea:focus { border-color: var(--primary-accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+    .field-hint { font-size: 11px; color: var(--text-muted); }
+
+    /* Pill Selectors (Blood Group & Allergies) */
+    .pills-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+    .pill-btn { background: #F8FAFC; border: 1.5px solid var(--border-medium); border-radius: 20px; padding: 7px 14px; font-size: 12px; font-weight: 800; color: var(--text-muted); cursor: pointer; transition: all 0.15s; }
+    .pill-btn:hover { border-color: var(--primary-accent); color: var(--text-main); }
+    .pill-btn.selected { background: var(--primary-dark); color: #FFFFFF; border-color: var(--primary-dark); }
+    .pill-btn.selected-medical { background: #EF4444; color: #FFFFFF; border-color: #EF4444; }
+
+    /* Package Selection Cards */
+    .packages-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+    @media (max-width: 650px) { .packages-grid { grid-template-columns: 1fr; } }
+    .pkg-card { border: 2px solid var(--border-subtle); border-radius: var(--radius-md); padding: 20px; cursor: pointer; transition: all 0.2s; position: relative; background: #FFFFFF; }
+    .pkg-card:hover { border-color: var(--primary-accent); }
+    .pkg-card.selected { border-color: var(--primary-accent); background: #F0F7FF; }
+    .pkg-badge { position: absolute; top: -10px; right: 16px; background: var(--accent-yellow); color: var(--text-main); font-size: 10px; font-weight: 900; padding: 3px 8px; border-radius: 4px; }
+    .pkg-title { font-size: 15px; font-weight: 900; margin-bottom: 4px; }
+    .pkg-price { font-size: 22px; font-weight: 900; color: var(--text-main); margin-bottom: 10px; }
+    .pkg-features { list-style: none; font-size: 11px; color: var(--text-muted); line-height: 18px; }
+    .pkg-features li:before { content: "✓ "; color: var(--accent-green); font-weight: 900; }
+
+    /* Simulated Payment Gateways */
+    .pay-methods { display: flex; gap: 10px; margin-bottom: 24px; }
+    .pay-method { flex: 1; border: 1.5px solid var(--border-medium); border-radius: var(--radius-sm); padding: 12px; text-align: center; cursor: pointer; font-size: 12px; font-weight: 800; transition: all 0.2s; }
+    .pay-method.selected { border-color: var(--accent-green); background: #ECFDF5; color: var(--accent-green); }
+
+    /* Stepper Buttons */
+    .step-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--border-subtle); }
+    .btn-prev { background: #F1F5F9; color: var(--text-main); border: 1px solid var(--border-medium); padding: 12px 20px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 800; cursor: pointer; }
+    .btn-next { background: var(--primary-dark); color: #FFFFFF; border: none; padding: 12px 28px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 800; cursor: pointer; }
+    .btn-next:hover { background: #1E293B; }
+    .btn-pay { background: var(--accent-green); color: #FFFFFF; border: none; padding: 14px 32px; border-radius: var(--radius-sm); font-size: 15px; font-weight: 900; cursor: pointer; width: 100%; box-shadow: var(--shadow-md); }
+    .btn-pay:hover { background: #047857; }
+
+    /* Step 4: Success View */
+    .success-box { text-align: center; padding: 20px 0; }
+    .success-icon { width: 64px; height: 64px; border-radius: 50%; background: #ECFDF5; color: var(--accent-green); display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 16px; border: 2px solid #A7F3D0; }
+    .success-title { font-size: 24px; font-weight: 900; margin-bottom: 6px; }
+    .success-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
+    
+    .key-box { background: #F8FAFC; border: 2px dashed #059669; border-radius: 12px; padding: 18px; max-width: 440px; margin: 0 auto 24px; }
+    .key-label { font-size: 11px; font-weight: 800; color: #64748B; letter-spacing: 1px; }
+    .key-val { font-size: 24px; font-weight: 900; color: #059669; letter-spacing: 2px; font-family: monospace; margin: 6px 0; }
+    
+    .order-actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 20px; }
+    .btn-action { padding: 12px 22px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 800; text-decoration: none; cursor: pointer; }
+    .btn-print { background: var(--primary-dark); color: #FFFFFF; border: none; }
+    .btn-portal { background: var(--accent-yellow); color: var(--text-main); border: 1px solid rgba(0,0,0,0.15); }
+
+    /* Footer */
+    .footer { background: #FFFFFF; border-top: 1px solid var(--border-subtle); padding: 40px 20px; font-size: 12px; color: var(--text-muted); }
+    .footer-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="nav">
+    <div class="nav-container">
+      <a href="/" class="brand">
+        <div class="brand-badge">🛡️ SafeQR</div>
+        <div>
+          <div class="brand-title">SafeQR Shield</div>
+        </div>
+      </a>
+      <div class="nav-links">
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#orderFormSection" class="nav-link">Pricing & Packs</a>
+        <a href="/admin" class="btn-admin">⚙️ Admin Console</a>
+        <a href="#orderFormSection" class="btn-buy-nav">Order QR Decal</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div>
+      <div class="hero-badge">🔒 100% Privacy Protected • Zero Number Exposure</div>
+      <h1 class="hero-title">
+        Never Display Your Personal Phone Number On Your <span>Windshield</span> Again.
+      </h1>
+      <p class="hero-sub">
+        Equip your car with an intelligent SafeQR Decal. Bystanders scan to report blocked parking or trigger an accident emergency alert. Calls route through our automated IVR relay without revealing your real number.
+      </p>
+
+      <div class="hero-cta-row">
+        <a href="#orderFormSection" class="btn-primary">
+          🛡️ Get Your SafeQR Shield — ₹299
+        </a>
+        <a href="/admin" class="btn-secondary">
+          ⚙️ Open Admin Control Portal
+        </a>
+      </div>
+
+      <div class="trust-bullets">
+        <div class="trust-bullet">✓ Automated IVR Voice Helpline</div>
+        <div class="trust-bullet">✓ Emergency Medical Vault (Blood Group)</div>
+        <div class="trust-bullet">✓ 1-Tap Accident WhatsApp SOS</div>
+      </div>
+    </div>
+
+    <!-- Live Interactive Decal Simulator -->
+    <div class="decal-preview-wrapper">
+      <div class="decal-card">
+        <div class="decal-holo-stripe"></div>
+        <div class="decal-header">
+          <div class="decal-brand">🛡️ SAFEQR RELAY</div>
+          <div class="decal-shield-badge">VERIFIED PASS</div>
+        </div>
+
+        <div class="decal-body">
+          <div class="qr-box">
+            <!-- Dynamic QR Canvas -->
+            <img id="previewQrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://localhost:3000/v/VID-MH12DE9900" alt="Decal QR">
+            <div class="qr-scan-tag">SCAN TO REPORT OR SOS</div>
+          </div>
+
+          <div class="decal-info">
+            <div class="decal-plate-box">
+              <div class="decal-plate-title">REGISTERED VEHICLE</div>
+              <div id="previewPlateText" class="decal-plate-val">MH-12-DE-9900</div>
+              <div id="previewModelText" class="decal-model-val">TATA HARRIER DARK</div>
+            </div>
+
+            <div class="decal-safety-row">
+              <div class="decal-mini-badge" id="previewBloodBadge">🩸 O+ POS</div>
+              <div class="decal-mini-badge" id="previewContactsBadge">👨‍👩‍👧 2 CONTACTS</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="decal-footer">
+          <div>Company IVR Helpline: <span class="decal-ivrtag">1800-202-9900</span></div>
+          <div>Zero Harassment Guarantee</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Bento Section -->
+  <section id="features" class="section-container">
+    <div class="section-header">
+      <div class="section-tag">ENGINEERED FOR SAFETY & PRIVACY</div>
+      <h2 class="section-title">Four Shields In One Smart Decal</h2>
+      <p class="section-desc">Designed to handle real-world parking conflicts and high-stakes highway accidents seamlessly.</p>
+    </div>
+
+    <div class="bento-grid">
+      <div class="bento-card">
+        <div class="bento-icon bento-icon-blue">🔒</div>
+        <h3 class="bento-title">Virtual Masked Calling</h3>
+        <p class="bento-desc">Bystanders can call you through our Company IVR helpline without seeing your personal phone number. Zero stalking, zero harassment, zero spam.</p>
+      </div>
+
+      <div class="bento-card">
+        <div class="bento-icon bento-icon-amber">🚗</div>
+        <h3 class="bento-title">One-Tap Parking Alerts</h3>
+        <p class="bento-desc">Blocked someone's driveway? Get an instant push notification on your phone and reply with 1-tap: "I'm moving my car right now!" to defuse anger.</p>
+      </div>
+
+      <div class="bento-card">
+        <div class="bento-icon bento-icon-red">🆘</div>
+        <h3 class="bento-title">Highway Accident SOS</h3>
+        <p class="bento-desc">In an unfortunate collision, Good Samaritans can scan your sticker to immediately notify your family via pre-filled WhatsApp SOS with your blood group and medical notes.</p>
+      </div>
+
+      <div class="bento-card">
+        <div class="bento-icon bento-icon-green">🚑</div>
+        <h3 class="bento-title">Country Emergency Routing</h3>
+        <p class="bento-desc">Automatically routes calls to the local emergency hotlines based on your country — India (112/108), USA (911), UK (999), UAE (999), or custom local responders.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Multi-Step Order & Customization Section -->
+  <section id="orderFormSection" class="order-section">
+    <div class="form-container">
+      <div class="form-header">
+        <div>
+          <div class="form-header-title">Order Your SafeQR Safety Shield</div>
+          <div class="form-header-sub">Customized for your vehicle with instant activation</div>
+        </div>
+        <div style="font-size: 26px;">🛡️</div>
+      </div>
+
+      <div class="stepper">
+        <div id="stepTab1" class="step-item active" onclick="goToStep(1)">1. Vehicle & Owner</div>
+        <div id="stepTab2" class="step-item" onclick="goToStep(2)">2. Medical & Contacts</div>
+        <div id="stepTab3" class="step-item" onclick="goToStep(3)">3. Package & Pay</div>
+        <div id="stepTab4" class="step-item">4. Activation Pass</div>
+      </div>
+
+      <div class="form-body">
+        <form id="orderForm" onsubmit="event.preventDefault();">
+          
+          <!-- STEP 1: VEHICLE & OWNER -->
+          <div id="step1" class="form-step active">
+            <div class="form-grid-2">
+              <div class="field-group">
+                <label class="field-label">Vehicle Registration Number <span>*</span></label>
+                <input type="text" id="regPlate" class="field-input" placeholder="e.g. MH-12-DE-9900" required oninput="updateLivePreview()">
+                <div class="field-hint">Printed on your license plate</div>
+              </div>
+              <div class="field-group">
+                <label class="field-label">Vehicle Make & Model <span>*</span></label>
+                <input type="text" id="vehicleModel" class="field-input" placeholder="e.g. Tata Harrier / Honda City" required oninput="updateLivePreview()">
+                <div class="field-hint">Helps bystanders identify your car</div>
+              </div>
+            </div>
+
+            <div class="form-grid-3">
+              <div class="field-group">
+                <label class="field-label">Vehicle Type</label>
+                <select id="vehicleType" class="field-select">
+                  <option value="Car">Car / Sedan</option>
+                  <option value="SUV" selected>SUV / Crossover</option>
+                  <option value="Bike">Motorcycle / Scooter</option>
+                  <option value="Commercial">Commercial / Truck</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label class="field-label">Owner Full Name <span>*</span></label>
+                <input type="text" id="ownerName" class="field-input" placeholder="e.g. Muhammad Sadiq" required>
+              </div>
+              <div class="field-group">
+                <label class="field-label">Owner Mobile (Confidential) <span>*</span></label>
+                <input type="tel" id="ownerPhone" class="field-input" placeholder="e.g. +91 98765 43210" required>
+                <div class="field-hint">Never exposed to bystanders</div>
+              </div>
+            </div>
+
+            <div class="form-grid-3">
+              <div class="field-group">
+                <label class="field-label">Country <span>*</span></label>
+                <select id="ownerCountry" class="field-select" onchange="onCountryChange()">
+                  <option value="India" selected>India (112 / 108)</option>
+                  <option value="United States">United States (911)</option>
+                  <option value="United Kingdom">United Kingdom (999)</option>
+                  <option value="United Arab Emirates">United Arab Emirates (999)</option>
+                  <option value="Canada">Canada (911)</option>
+                  <option value="Australia">Australia (000)</option>
+                  <option value="Saudi Arabia">Saudi Arabia (999 / 997)</option>
+                  <option value="Germany">Germany (110 / 112)</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label class="field-label">State / Province <span>*</span></label>
+                <input type="text" id="ownerState" class="field-input" placeholder="e.g. Maharashtra" required>
+              </div>
+              <div class="field-group">
+                <label class="field-label">City / Region <span>*</span></label>
+                <input type="text" id="ownerCity" class="field-input" placeholder="e.g. Pune" required>
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="field-group">
+                <label class="field-label">Email Address (For Key & Pass Delivery) <span>*</span></label>
+                <input type="email" id="ownerEmail" class="field-input" placeholder="e.g. sadiq@example.com" required>
+              </div>
+              <div class="field-group">
+                <label class="field-label">Decal Delivery Shipping Address <span>*</span></label>
+                <input type="text" id="ownerAddress" class="field-input" placeholder="Flat, Building, Street, Pincode" required>
+              </div>
+            </div>
+
+            <div class="step-actions">
+              <div></div>
+              <button type="button" class="btn-next" onclick="goToStep(2)">Proceed to Medical & Contacts ➔</button>
+            </div>
+          </div>
+
+          <!-- STEP 2: MEDICAL & EMERGENCY CONTACTS -->
+          <div id="step2" class="form-step">
+            <div class="field-group">
+              <label class="field-label">Blood Group (Used for Highway Accident Dispatch) <span>*</span></label>
+              <div class="pills-row" id="bloodPills">
+                <button type="button" class="pill-btn selected-medical" onclick="selectBlood(this, 'O+ Positive')">O+ Positive</button>
+                <button type="button" class="pill-btn" onclick="selectBlood(this, 'O- Negative')">O- Negative</button>
+                <button type="button" class="pill-btn" onclick="selectBlood(this, 'A+ Positive')">A+ Positive</button>
+                <button type="button" class="pill-btn" onclick="selectBlood(this, 'A- Negative')">A- Negative</button>
+                <button type="button" class="pill-btn" onclick="selectBlood(this, 'B+ Positive')">B+ Positive</button>
+                <button type="button" class="pill-btn" onclick="selectBlood(this, 'B- Negative')">B- Negative</button>
+                <button type="button" class="pill-btn" onclick="selectBlood(this, 'AB+ Positive')">AB+ Positive</button>
+                <button type="button" class="pill-btn" onclick="selectBlood(this, 'AB- Negative')">AB- Negative</button>
+              </div>
+              <input type="hidden" id="selectedBloodGroup" value="O+ Positive">
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">Medical Allergies & Pre-conditions (Select all that apply)</label>
+              <div class="pills-row" id="allergyPills">
+                <button type="button" class="pill-btn selected" onclick="toggleAllergy(this, 'None')">No Known Allergies</button>
+                <button type="button" class="pill-btn" onclick="toggleAllergy(this, 'Penicillin')">Penicillin</button>
+                <button type="button" class="pill-btn" onclick="toggleAllergy(this, 'Peanuts')">Peanuts</button>
+                <button type="button" class="pill-btn" onclick="toggleAllergy(this, 'Latex')">Latex</button>
+                <button type="button" class="pill-btn" onclick="toggleAllergy(this, 'Asthma/Dust')">Asthma / Dust</button>
+                <button type="button" class="pill-btn" onclick="toggleAllergy(this, 'Diabetes')">Diabetic</button>
+              </div>
+            </div>
+
+            <div style="margin: 24px 0 16px; font-size: 14px; font-weight: 800; color: var(--text-main); border-top: 1px solid var(--border-subtle); padding-top: 18px;">
+              👨‍👩‍👧 Primary Family Emergency Contacts
+            </div>
+
+            <div class="form-grid-3">
+              <div class="field-group">
+                <label class="field-label">Contact #1 Name <span>*</span></label>
+                <input type="text" id="c1Name" class="field-input" placeholder="e.g. Ayesha Khan" required>
+              </div>
+              <div class="field-group">
+                <label class="field-label">Relationship <span>*</span></label>
+                <input type="text" id="c1Rel" class="field-input" placeholder="e.g. Spouse / Parent" required>
+              </div>
+              <div class="field-group">
+                <label class="field-label">Mobile Number <span>*</span></label>
+                <input type="tel" id="c1Phone" class="field-input" placeholder="e.g. +91 98765 43210" required>
+              </div>
+            </div>
+
+            <div class="form-grid-3">
+              <div class="field-group">
+                <label class="field-label">Contact #2 Name (Optional)</label>
+                <input type="text" id="c2Name" class="field-input" placeholder="e.g. Tariq Ali">
+              </div>
+              <div class="field-group">
+                <label class="field-label">Relationship</label>
+                <input type="text" id="c2Rel" class="field-input" placeholder="e.g. Brother / Sibling">
+              </div>
+              <div class="field-group">
+                <label class="field-label">Mobile Number</label>
+                <input type="tel" id="c2Phone" class="field-input" placeholder="e.g. +91 98765 43211">
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">Emergency Medical Notes</label>
+              <textarea id="emergencyNote" class="field-textarea" rows="2" placeholder="e.g. Patient wears spectacles, carries asthma inhaler in glove compartment."></textarea>
+            </div>
+
+            <div class="step-actions">
+              <button type="button" class="btn-prev" onclick="goToStep(1)">← Back</button>
+              <button type="button" class="btn-next" onclick="goToStep(3)">Select Safety Pack ➔</button>
+            </div>
+          </div>
+
+          <!-- STEP 3: PACKAGE & PAYMENT -->
+          <div id="step3" class="form-step">
+            <label class="field-label" style="margin-bottom: 12px; display: block;">Select Your SafeQR Package</label>
+            <div class="packages-grid">
+              <div class="pkg-card selected" id="pkg1" onclick="selectPackage(1, 299, 'Starter Dual Decal Pack')">
+                <div class="pkg-badge">POPULAR</div>
+                <div class="pkg-title">Dual Windshield Pack</div>
+                <div class="pkg-price">₹299 <span style="font-size: 13px; font-weight: 600; color: var(--text-muted);">one-time</span></div>
+                <ul class="pkg-features">
+                  <li>2x UV-Proof Reflective Decals</li>
+                  <li>Virtual IVR Masked Helpline</li>
+                  <li>1-Tap Move Car Live Alert</li>
+                  <li>Accident WhatsApp SOS Vault</li>
+                </ul>
+              </div>
+
+              <div class="pkg-card" id="pkg2" onclick="selectPackage(2, 499, 'Pro Lifetime Holographic Pack')">
+                <div class="pkg-badge" style="background: var(--accent-green); color: #fff;">LIFETIME</div>
+                <div class="pkg-title">Lifetime Pro Shield</div>
+                <div class="pkg-price">₹499 <span style="font-size: 13px; font-weight: 600; color: var(--text-muted);">one-time</span></div>
+                <ul class="pkg-features">
+                  <li>4x Holographic Decals (Car + Bike)</li>
+                  <li>Priority IVR Automated Bridge</li>
+                  <li>Dual Contact WhatsApp SOS</li>
+                  <li>Replacement Decal Warranty</li>
+                </ul>
+              </div>
+            </div>
+
+            <input type="hidden" id="selectedPlanName" value="Starter Dual Decal Pack">
+            <input type="hidden" id="selectedPlanAmount" value="299">
+
+            <label class="field-label" style="margin-bottom: 10px; display: block;">Select Payment Method (Test Simulation Mode)</label>
+            <div class="pay-methods">
+              <div class="pay-method selected" onclick="selectPay(this)">⚡ UPI (GPay / PhonePe)</div>
+              <div class="pay-method" onclick="selectPay(this)">💳 Credit / Debit Card</div>
+              <div class="pay-method" onclick="selectPay(this)">🏦 Net Banking</div>
+            </div>
+
+            <div style="background: #F8FAFC; border: 1px solid var(--border-medium); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 24px; font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 18px;">🔒</span>
+              <div>
+                <strong>Instant Digital Activation:</strong> Your digital QR code and master activation key will be generated immediately upon payment confirmation. Physical stickers will be dispatched to your shipping address.
+              </div>
+            </div>
+
+            <div class="step-actions" style="flex-direction: column; gap: 12px;">
+              <button type="button" class="btn-pay" onclick="submitOrder()">
+                💳 Confirm Payment & Activate SafeQR (₹<span id="payBtnAmount">299</span>)
+              </button>
+              <button type="button" class="btn-prev" style="width: 100%;" onclick="goToStep(2)">← Edit Details</button>
+            </div>
+          </div>
+
+          <!-- STEP 4: SUCCESS VIEW -->
+          <div id="step4" class="form-step">
+            <div class="success-box">
+              <div class="success-icon">✓</div>
+              <h2 class="success-title">Order Confirmed & Shield Activated!</h2>
+              <p class="success-sub">A confirmation email with your activation key has been dispatched to <strong id="successEmailText">owner@example.com</strong>.</p>
+
+              <div class="key-box">
+                <div class="key-label">MASTER ACTIVATION KEY</div>
+                <div id="successKeyText" class="key-val">SQR-KEY-8942-X7B2</div>
+                <div style="font-size: 11px; color: #64748B;">Enter this key in your SafeQR Mobile App to link this vehicle.</div>
+              </div>
+
+              <!-- High-Res Printable Pass Card -->
+              <div style="background: #121316; border: 2px solid #FFD600; border-radius: 14px; padding: 20px; max-width: 380px; margin: 0 auto; color: #FFFFFF; text-align: center;">
+                <div style="font-size: 13px; font-weight: 900; color: #FFD600; margin-bottom: 8px;">🛡️ YOUR VEHICLE QR PASS</div>
+                <div style="background: #FFFFFF; display: inline-block; padding: 12px; border-radius: 10px; margin-bottom: 8px;">
+                  <img id="successQrImg" src="" style="width: 160px; height: 160px; display: block;" alt="Vehicle QR">
+                </div>
+                <div id="successPlateText" style="font-size: 20px; font-weight: 900; letter-spacing: 1.5px;">MH-12-DE-9900</div>
+                <div id="successModelText" style="font-size: 11px; color: #9CA3AF; margin-bottom: 12px;">TATA HARRIER DARK</div>
+                <div style="font-size: 10px; color: #10B981; font-weight: 800;">✓ LIVE RELAY READY • SCAN WITH ANY CAMERA</div>
+              </div>
+
+              <div class="order-actions">
+                <button type="button" class="btn-action btn-print" onclick="window.print()">🖨️ Print Digital Decal Pass</button>
+                <a id="successPortalLink" href="/v" target="_blank" class="btn-action btn-portal">👁️ Open Live Bystander Portal</a>
+                <a href="/admin" class="btn-action" style="background: #F1F5F9; color: var(--text-main); border: 1px solid var(--border-medium);">⚙️ Go to Admin Console</a>
+              </div>
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div>
+        <strong>SafeQR Technologies</strong> • Intelligent Vehicle Privacy & Emergency Relay Ecosystem
+      </div>
+      <div>
+        <a href="/admin" style="color: var(--primary-accent); text-decoration: none; font-weight: 800; margin-right: 18px;">Admin Dashboard</a>
+        <span>© 2026 SafeQR. All rights reserved.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    let currentStep = 1;
+    let selectedBlood = 'O+ Positive';
+    let selectedAllergies = ['None'];
+
+    function goToStep(step) {
+      if (step > currentStep && step === 2) {
+        if (!document.getElementById('regPlate').value || !document.getElementById('vehicleModel').value || !document.getElementById('ownerPhone').value) {
+          alert('Please fill the required vehicle plate, model, and owner mobile.');
+          return;
+        }
+      }
+      if (step > currentStep && step === 3) {
+        if (!document.getElementById('c1Name').value || !document.getElementById('c1Phone').value) {
+          alert('Please specify at least one primary family emergency contact.');
+          return;
+        }
+      }
+
+      currentStep = step;
+      document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
+      document.getElementById('step' + step).classList.add('active');
+
+      document.querySelectorAll('.step-item').forEach((el, idx) => {
+        el.classList.remove('active');
+        if (idx + 1 === step) el.classList.add('active');
+        if (idx + 1 < step) el.classList.add('completed');
+      });
+
+      updateLivePreview();
+    }
+
+    function updateLivePreview() {
+      const plate = document.getElementById('regPlate').value.trim() || 'MH-12-DE-9900';
+      const model = document.getElementById('vehicleModel').value.trim() || 'TATA HARRIER DARK';
+      
+      document.getElementById('previewPlateText').innerText = plate.toUpperCase();
+      document.getElementById('previewModelText').innerText = model.toUpperCase();
+      document.getElementById('previewBloodBadge').innerText = '🩸 ' + selectedBlood.split(' ')[0];
+
+      const cleanPlate = plate.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      const base = (window.SAFEQR_LAN_BASE && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) ? window.SAFEQR_LAN_BASE : window.location.origin;
+      const qrUrl = base + '/v/VID-' + cleanPlate;
+      document.getElementById('previewQrImg').src = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + encodeURIComponent(qrUrl);
+    }
+
+    function selectBlood(btn, blood) {
+      selectedBlood = blood;
+      document.getElementById('selectedBloodGroup').value = blood;
+      document.querySelectorAll('#bloodPills .pill-btn').forEach(b => b.classList.remove('selected-medical'));
+      btn.classList.add('selected-medical');
+      updateLivePreview();
+    }
+
+    function toggleAllergy(btn, allergy) {
+      if (allergy === 'None') {
+        selectedAllergies = ['None'];
+        document.querySelectorAll('#allergyPills .pill-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        return;
+      }
+
+      document.querySelectorAll('#allergyPills .pill-btn')[0].classList.remove('selected');
+      selectedAllergies = selectedAllergies.filter(a => a !== 'None');
+
+      if (btn.classList.contains('selected')) {
+        btn.classList.remove('selected');
+        selectedAllergies = selectedAllergies.filter(a => a !== allergy);
+        if (selectedAllergies.length === 0) {
+          selectedAllergies = ['None'];
+          document.querySelectorAll('#allergyPills .pill-btn')[0].classList.add('selected');
+        }
+      } else {
+        btn.classList.add('selected');
+        selectedAllergies.push(allergy);
+      }
+    }
+
+    function selectPackage(pkgId, price, name) {
+      document.getElementById('pkg1').classList.remove('selected');
+      document.getElementById('pkg2').classList.remove('selected');
+      document.getElementById('pkg' + pkgId).classList.add('selected');
+
+      document.getElementById('selectedPlanAmount').value = price;
+      document.getElementById('selectedPlanName').value = name;
+      document.getElementById('payBtnAmount').innerText = price;
+    }
+
+    function selectPay(el) {
+      document.querySelectorAll('.pay-method').forEach(m => m.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function onCountryChange() {
+      // Country selection hook for auto-responder routing
+    }
+
+    async function submitOrder() {
+      const plate = document.getElementById('regPlate').value.trim();
+      const model = document.getElementById('vehicleModel').value.trim();
+      const vehicleType = document.getElementById('vehicleType').value;
+      const ownerName = document.getElementById('ownerName').value.trim();
+      const ownerPhone = document.getElementById('ownerPhone').value.trim();
+      const ownerEmail = document.getElementById('ownerEmail').value.trim();
+      const country = document.getElementById('ownerCountry').value;
+      const state = document.getElementById('ownerState').value.trim();
+      const city = document.getElementById('ownerCity').value.trim();
+      const address = document.getElementById('ownerAddress').value.trim();
+      const emergencyNote = document.getElementById('emergencyNote').value.trim();
+
+      const contacts = [];
+      const c1Name = document.getElementById('c1Name').value.trim();
+      const c1Rel = document.getElementById('c1Rel').value.trim();
+      const c1Phone = document.getElementById('c1Phone').value.trim();
+      if (c1Name && c1Phone) {
+        contacts.push({ id: 'ec-1', name: c1Name, relationship: c1Rel || 'Family', phone: c1Phone, priority: 1 });
+      }
+
+      const c2Name = document.getElementById('c2Name').value.trim();
+      const c2Rel = document.getElementById('c2Rel').value.trim();
+      const c2Phone = document.getElementById('c2Phone').value.trim();
+      if (c2Name && c2Phone) {
+        contacts.push({ id: 'ec-2', name: c2Name, relationship: c2Rel || 'Family', phone: c2Phone, priority: 2 });
+      }
+
+      const plan = document.getElementById('selectedPlanName').value;
+      const amount = Number(document.getElementById('selectedPlanAmount').value);
+
+      const payload = {
+        registrationPlate: plate,
+        model,
+        vehicleType,
+        ownerName,
+        ownerPhone,
+        ownerEmail,
+        country,
+        state,
+        city,
+        address,
+        medical: {
+          bloodGroup: selectedBlood,
+          allergies: selectedAllergies,
+          emergencyNote
+        },
+        emergencyContacts: contacts,
+        plan,
+        amount
+      };
+
+      try {
+        const res = await fetch('/api/orders/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) throw new Error('Order checkout failed');
+        const data = await res.json();
+
+        // Render Step 4 Success
+        document.getElementById('successEmailText').innerText = ownerEmail || 'your email';
+        document.getElementById('successKeyText').innerText = data.vehicle.activationKey;
+        document.getElementById('successPlateText').innerText = data.vehicle.registrationPlate;
+        document.getElementById('successModelText').innerText = data.vehicle.model.toUpperCase();
+        
+        const base = (window.SAFEQR_LAN_BASE && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) ? window.SAFEQR_LAN_BASE : window.location.origin;
+        const scanUrl = base + '/v/' + data.vehicle.qrToken;
+        document.getElementById('successQrImg').src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(scanUrl);
+        document.getElementById('successPortalLink').href = scanUrl;
+
+        goToStep(4);
+      } catch (err) {
+        alert('Order submission error: ' + err.message);
+      }
+    }
+  </script>
+</body>
+</html>

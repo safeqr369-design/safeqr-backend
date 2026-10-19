@@ -1,0 +1,1756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>SafeQR+ Master Command Center & Admin Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-page: #F8FAFC;
+      --bg-card: #FFFFFF;
+      --border-subtle: #E2E8F0;
+      --border-medium: #CBD5E1;
+      --text-main: #0F172A;
+      --text-muted: #64748B;
+      --sidebar-bg: #0F172A;
+      --sidebar-hover: #1E293B;
+      --sidebar-active: #2563EB;
+      --sidebar-text: #94A3B8;
+      --sidebar-text-active: #FFFFFF;
+      --primary-accent: #2563EB;
+      --accent-green: #059669;
+      --accent-amber: #D97706;
+      --accent-yellow: #FFD600;
+      --accent-red: #EF4444;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 14px rgba(0,0,0,0.06);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; }
+    body { background-color: var(--bg-page); color: var(--text-main); font-size: 13px; line-height: 1.5; display: flex; height: 100vh; overflow: hidden; }
+
+    /* LAYOUT: SIDEBAR + MAIN WORKSPACE */
+    .app-layout { display: flex; width: 100vw; height: 100vh; overflow: hidden; }
+
+    /* LEFT SIDEBAR */
+    .sidebar { width: 280px; min-width: 280px; background: var(--sidebar-bg); display: flex; flex-direction: column; border-right: 1px solid #1E293B; height: 100vh; z-index: 100; transition: transform 0.25s ease; }
+    .sidebar-header { padding: 22px 20px; border-bottom: 1px solid #1E293B; display: flex; align-items: center; justify-content: space-between; }
+    .sidebar-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .brand-logo-pill { background: var(--accent-yellow); color: #0F172A; font-weight: 900; font-size: 14px; padding: 4px 8px; border-radius: 6px; letter-spacing: 0.5px; }
+    .brand-title { color: #FFFFFF; font-size: 16px; font-weight: 900; letter-spacing: -0.3px; }
+    .brand-sub { color: #64748B; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; }
+
+    .sidebar-nav { flex: 1; overflow-y: auto; padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; }
+    .nav-category { font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 1px; padding: 14px 12px 6px; margin-top: 4px; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: var(--radius-sm); color: var(--sidebar-text); text-decoration: none; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.15s ease; border: 1px solid transparent; }
+    .nav-item:hover { background: var(--sidebar-hover); color: #FFFFFF; }
+    .nav-item.active { background: #1E3A8A; color: #FFFFFF; border-color: #3B82F6; font-weight: 800; }
+    .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+    .nav-badge { margin-left: auto; font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 20px; background: #1E293B; color: #94A3B8; }
+    .nav-item.active .nav-badge { background: #2563EB; color: #FFFFFF; }
+
+    .sidebar-footer { padding: 16px; border-top: 1px solid #1E293B; background: #0A0F1D; display: flex; align-items: center; justify-content: space-between; }
+    .admin-profile { display: flex; align-items: center; gap: 10px; }
+    .admin-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--accent-yellow); color: #0F172A; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 13px; }
+    .admin-name { color: #FFFFFF; font-size: 12px; font-weight: 800; line-height: 1.2; }
+    .admin-role { color: #64748B; font-size: 10px; font-weight: 600; }
+    .btn-sidebar-logout { background: none; border: none; color: #94A3B8; cursor: pointer; font-size: 16px; padding: 6px; border-radius: 6px; }
+    .btn-sidebar-logout:hover { color: #EF4444; background: #1E293B; }
+
+    /* MAIN CONTENT AREA */
+    .main-wrapper { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+    /* TOPBAR */
+    .topbar { background: #FFFFFF; border-bottom: 1px solid var(--border-subtle); padding: 14px 28px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 40; }
+    .topbar-left { display: flex; align-items: center; gap: 14px; }
+    .mobile-menu-btn { display: none; background: none; border: 1px solid var(--border-subtle); padding: 6px 10px; border-radius: 6px; font-size: 16px; cursor: pointer; }
+    .topbar-title-section { display: flex; flex-direction: column; }
+    .topbar-page-title { font-size: 18px; font-weight: 900; color: var(--text-main); }
+    .topbar-page-sub { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .sync-pill { display: flex; align-items: center; gap: 6px; background: #ECFDF5; border: 1px solid #A7F3D0; color: var(--accent-green); font-size: 11px; font-weight: 800; padding: 5px 12px; border-radius: 20px; }
+    .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #10B981; animation: pulseDot 2s infinite; }
+    @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .btn-top { padding: 8px 16px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 800; cursor: pointer; text-decoration: none; border: 1px solid var(--border-medium); background: #FFFFFF; color: var(--text-main); display: inline-flex; align-items: center; gap: 6px; transition: all 0.15s ease; }
+    .btn-top:hover { background: #F1F5F9; }
+    .btn-top-save { background: #0F172A; color: #FFFFFF; border-color: #0F172A; }
+    .btn-top-save:hover { background: #1E293B; }
+
+    /* CONTENT SCROLLABLE */
+    .content-area { flex: 1; overflow-y: auto; padding: 24px 28px 60px; }
+
+    /* SECTION CONTAINERS */
+    .admin-section { display: none; }
+    .admin-section.active { display: block; animation: fadeIn 0.2s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* METRICS SUMMARY CARDS */
+    .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .metric-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 18px 20px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden; }
+    .metric-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--border-medium); }
+    .metric-card.accent-blue::before { background: var(--primary-accent); }
+    .metric-card.accent-green::before { background: var(--accent-green); }
+    .metric-card.accent-yellow::before { background: var(--accent-yellow); }
+    .metric-card.accent-red::before { background: var(--accent-red); }
+    .metric-label { font-size: 11px; font-weight: 800; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px; }
+    .metric-val { font-size: 26px; font-weight: 900; color: var(--text-main); }
+    .metric-sub { font-size: 11px; color: var(--accent-green); font-weight: 700; margin-top: 4px; }
+
+    /* CARDS & PANELS */
+    .card-panel { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 22px; margin-bottom: 20px; box-shadow: var(--shadow-sm); }
+    .card-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--border-subtle); }
+    .card-title { font-size: 15px; font-weight: 900; display: flex; align-items: center; gap: 8px; color: var(--text-main); }
+    .card-sub { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+
+    /* FORMS & INPUTS */
+    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    @media (max-width: 900px) { .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; } }
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .form-label { font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-control { background: #F8FAFC; border: 1.5px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 9px 12px; font-size: 13px; font-weight: 600; color: var(--text-main); outline: none; width: 100%; transition: all 0.15s ease; }
+    .form-control:focus { border-color: var(--primary-accent); background: #FFFFFF; box-shadow: 0 0 0 3px rgba(37,99,235,0.08); }
+    textarea.form-control { resize: vertical; min-height: 80px; }
+
+    /* BUTTONS */
+    .btn { padding: 9px 18px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; border: 1px solid transparent; text-decoration: none; transition: all 0.15s ease; }
+    .btn-primary { background: var(--primary-dark); color: #FFFFFF; }
+    .btn-primary:hover { background: #1E293B; }
+    .btn-accent { background: var(--primary-accent); color: #FFFFFF; }
+    .btn-accent:hover { background: #1D4ED8; }
+    .btn-success { background: #ECFDF5; color: var(--accent-green); border-color: #A7F3D0; }
+    .btn-success:hover { background: #D1FAE5; }
+    .btn-warning { background: #FFFBEB; color: var(--accent-amber); border-color: #FDE68A; }
+    .btn-danger { background: #FEF2F2; color: var(--accent-red); border-color: #FECACA; }
+    .btn-secondary { background: #F1F5F9; color: var(--text-main); border-color: var(--border-medium); }
+    .btn-secondary:hover { background: #E2E8F0; }
+
+    /* TABLES */
+    .table-container { border: 1px solid var(--border-subtle); border-radius: var(--radius-md); overflow-x: auto; background: #FFFFFF; }
+    .data-table { width: 100%; border-collapse: collapse; text-align: left; }
+    .data-table th { background: #F8FAFC; color: #475569; font-weight: 800; font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase; padding: 12px 16px; border-bottom: 1px solid var(--border-subtle); }
+    .data-table td { padding: 13px 16px; border-bottom: 1px solid var(--border-subtle); font-size: 12px; vertical-align: middle; }
+    .data-table tr:hover { background: #F8FAFC; }
+
+    /* BADGES */
+    .plate-badge { background: #121316; color: #FFD600; font-family: monospace; font-size: 12px; font-weight: 900; padding: 4px 8px; border-radius: 4px; display: inline-block; letter-spacing: 1px; border: 1px solid #000; text-decoration: none; }
+    .status-badge { font-weight: 800; font-size: 10px; padding: 3px 8px; border-radius: 4px; display: inline-block; }
+    .status-active { background: #ECFDF5; color: #059669; }
+    .status-standby { background: #FFFBEB; color: #D97706; }
+    .status-suspended { background: #FEF2F2; color: #DC2626; }
+
+    /* GATEWAY & CARDS SELECTOR */
+    .selector-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 18px; }
+    .selector-card { border: 2px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 14px; cursor: pointer; text-align: center; transition: all 0.15s ease; background: #FFFFFF; }
+    .selector-card:hover { border-color: var(--primary-accent); }
+    .selector-card.selected { border-color: var(--primary-accent); background: #EFF6FF; }
+    .selector-title { font-weight: 800; font-size: 13px; margin-top: 4px; }
+    .selector-sub { font-size: 11px; color: var(--text-muted); }
+
+    /* LIVE PREVIEW BOXES */
+    .preview-card { border: 2px dashed var(--border-medium); border-radius: var(--radius-md); padding: 18px; background: #F8FAFC; margin-top: 14px; }
+    .preview-label { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+
+    /* TOAST NOTIFICATION */
+    .toast-notice { position: fixed; bottom: 24px; right: 24px; background: #0F172A; color: #FFFFFF; padding: 12px 20px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 800; display: none; align-items: center; gap: 8px; z-index: 1000; box-shadow: var(--shadow-md); border-left: 4px solid #10B981; }
+
+    /* MODAL */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); z-index: 999; justify-content: center; align-items: center; padding: 20px; }
+    .modal-box { background: #FFFFFF; border-radius: var(--radius-lg); width: 100%; max-width: 680px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-md); padding: 28px; position: relative; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border-subtle); }
+    .modal-title { font-size: 17px; font-weight: 900; }
+    .modal-close { background: none; border: none; font-size: 20px; font-weight: 900; cursor: pointer; color: var(--text-muted); }
+
+    @media (max-width: 950px) {
+      .sidebar { position: fixed; left: -280px; top: 0; bottom: 0; }
+      .sidebar.open { left: 0; }
+      .mobile-menu-btn { display: inline-block; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-layout">
+  <!-- ==================================================== -->
+  <!-- LEFT-HAND SIDEBAR NAVIGATION -->
+  <!-- ==================================================== -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <a href="/admin" class="sidebar-brand">
+        <span class="brand-logo-pill">SafeQR+</span>
+        <div>
+          <div class="brand-title">Admin Console</div>
+          <div class="brand-sub">Master Fleet Command</div>
+        </div>
+      </a>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-category">Core Operations</div>
+      <a class="nav-item active" onclick="switchSection('overview')">
+        <span class="nav-icon">📊</span>
+        <span>Overview & Metrics</span>
+      </a>
+      <a class="nav-item" onclick="switchSection('users')">
+        <span class="nav-icon">👥</span>
+        <span>User Management</span>
+        <span id="navUsersCount" class="nav-badge">0</span>
+      </a>
+      <a class="nav-item" onclick="switchSection('vehicles')">
+        <span class="nav-icon">🛡️</span>
+        <span>Fleet & Vehicles</span>
+        <span id="navVehiclesCount" class="nav-badge">0</span>
+      </a>
+      <a class="nav-item" onclick="switchSection('orders')">
+        <span class="nav-icon">📦</span>
+        <span>Customer Orders</span>
+        <span id="navOrdersCount" class="nav-badge">0</span>
+      </a>
+
+      <div class="nav-category">Integrations & Services</div>
+      <a class="nav-item" onclick="switchSection('payments')">
+        <span class="nav-icon">💳</span>
+        <span>Payment Gateways</span>
+      </a>
+      <a class="nav-item" onclick="switchSection('otp')">
+        <span class="nav-icon">📲</span>
+        <span>OTP, SMS & Email</span>
+      </a>
+
+      <div class="nav-category">App Content & Media</div>
+      <a class="nav-item" onclick="switchSection('pricing')">
+        <span class="nav-icon">🏷️</span>
+        <span>Pricing & Plans</span>
+      </a>
+      <a class="nav-item" onclick="switchSection('demo')">
+        <span class="nav-icon">🎬</span>
+        <span>Demo Video Link</span>
+      </a>
+      <a class="nav-item" onclick="switchSection('banners')">
+        <span class="nav-icon">🖼️</span>
+        <span>Home Banners</span>
+      </a>
+      <a class="nav-item" onclick="switchSection('onboarding')">
+        <span class="nav-icon">🚀</span>
+        <span>Onboarding Carousel</span>
+      </a>
+      <a class="nav-item" onclick="switchSection('helpline')">
+        <span class="nav-icon">📞</span>
+        <span>Tollfree & Helpline</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="admin-profile">
+        <div class="admin-avatar">A</div>
+        <div>
+          <div class="admin-name">Super Admin</div>
+          <div id="lanHostIndicator" class="admin-role">LAN: Port 3000</div>
+        </div>
+      </div>
+      <button class="btn-sidebar-logout" title="Sign Out" onclick="logoutAdmin()">🚪</button>
+    </div>
+  </aside>
+
+  <!-- ==================================================== -->
+  <!-- MAIN WORKSPACE CONTENT -->
+  <!-- ==================================================== -->
+  <div class="main-wrapper">
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+        <div class="topbar-title-section">
+          <h1 id="pageTitle" class="topbar-page-title">Overview & Metrics</h1>
+          <div id="pageSubtitle" class="topbar-page-sub">Live synchronized SafeQR ecosystem analytics & status</div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="sync-pill">
+          <div class="sync-dot"></div>
+          <span>Cloud Synced</span>
+        </div>
+        <a href="/" target="_blank" class="btn-top">🌐 Public Site</a>
+        <button class="btn-top btn-top-save" onclick="saveAllActiveConfig()">💾 Save Changes</button>
+      </div>
+    </header>
+
+    <!-- Scrollable Workspace -->
+    <main class="content-area">
+
+      <!-- ==================================================== -->
+      <!-- SECTION 1: OVERVIEW & METRICS -->
+      <!-- ==================================================== -->
+      <div id="sec-overview" class="admin-section active">
+        <div class="metrics-grid">
+          <div class="metric-card accent-blue">
+            <div class="metric-label">Registered Users</div>
+            <div id="metricUsers" class="metric-val">--</div>
+            <div class="metric-sub">👤 Verified Indian Motorists</div>
+          </div>
+          <div class="metric-card accent-green">
+            <div class="metric-label">Total Fleet Vehicles</div>
+            <div id="metricVehicles" class="metric-val">--</div>
+            <div class="metric-sub">✓ Shield Active & Standby</div>
+          </div>
+          <div class="metric-card accent-yellow">
+            <div class="metric-label">Customer Orders</div>
+            <div id="metricOrders" class="metric-val">--</div>
+            <div class="metric-sub">📦 Decals Dispatched & Paid</div>
+          </div>
+          <div class="metric-card accent-red">
+            <div class="metric-label">Total Revenue</div>
+            <div id="metricRevenue" class="metric-val">₹0</div>
+            <div class="metric-sub">💳 Decals & Subscriptions</div>
+          </div>
+        </div>
+
+        <div class="card-panel">
+          <div class="card-header">
+            <div>
+              <div class="card-title">⚡ Quick Management Shortcuts</div>
+              <div class="card-sub">Jump directly into any backend configuration or user management module</div>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px;">
+            <button class="btn btn-secondary" style="padding: 16px; justify-content: flex-start; text-align: left;" onclick="switchSection('users')">
+              <span style="font-size: 20px;">👥</span>
+              <div>
+                <div style="font-weight: 800;">Manage Users</div>
+                <div style="font-size: 11px; color: var(--text-muted);">Reset calls & user status</div>
+              </div>
+            </button>
+            <button class="btn btn-secondary" style="padding: 16px; justify-content: flex-start; text-align: left;" onclick="switchSection('payments')">
+              <span style="font-size: 20px;">💳</span>
+              <div>
+                <div style="font-weight: 800;">Payment Settings</div>
+                <div style="font-size: 11px; color: var(--text-muted);">Razorpay, Cashfree & UPI</div>
+              </div>
+            </button>
+            <button class="btn btn-secondary" style="padding: 16px; justify-content: flex-start; text-align: left;" onclick="switchSection('banners')">
+              <span style="font-size: 20px;">🖼️</span>
+              <div>
+                <div style="font-weight: 800;">Home Banners</div>
+                <div style="font-size: 11px; color: var(--text-muted);">Update promo slides & imgs</div>
+              </div>
+            </button>
+            <button class="btn btn-secondary" style="padding: 16px; justify-content: flex-start; text-align: left;" onclick="switchSection('onboarding')">
+              <span style="font-size: 20px;">🚀</span>
+              <div>
+                <div style="font-weight: 800;">Startup Carousel</div>
+                <div style="font-size: 11px; color: var(--text-muted);">Edit 3 splash screens</div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================== -->
+      <!-- SECTION 2: USER MANAGEMENT -->
+      <!-- ==================================================== -->
+      <div id="sec-users" class="admin-section">
+        <div class="card-panel">
+          <div class="card-header">
+            <div>
+              <div class="card-title">👥 Registered Users & Motorists</div>
+              <div class="card-sub">Handle verified app users, manage status, view medical info, and reset free calling limits</div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <input type="text" id="userSearchInput" class="form-control" style="width: 240px;" placeholder="🔍 Search name, phone, city..." oninput="filterUsersTable()">
+              <select id="userStatusFilter" class="form-control" style="width: 140px;" onchange="filterUsersTable()">
+                <option value="ALL">All Status</option>
+                <option value="ACTIVE">Active</option>
+                <option value="SUSPENDED">Suspended</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Contact</th>
+                  <th>Location</th>
+                  <th>Vehicles</th>
+                  <th>Free Calls</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="usersTableBody">
+                <tr><td colspan="7" style="text-align: center; padding: 24px;">Loading registered users...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================== -->
+      <!-- SECTION 3: FLEET & VEHICLES -->
+      <!-- ==================================================== -->
+      <div id="sec-vehicles" class="admin-section">
+        <div class="card-panel">
+          <div class="card-header">
+            <div>
+              <div class="card-title">🛡️ Registered Vehicle Safety Fleet</div>
+              <div class="card-sub">Manage QR tokens, windshield decals, medical vaults & emergency contacts</div>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button class="btn btn-primary" onclick="openCreateModal()">+ Create Vehicle QR</button>
+              <button class="btn btn-success" onclick="exportExcel()">📥 Export Excel (.xlsx)</button>
+              <button class="btn btn-secondary" onclick="openImportModal()">📤 Import Excel</button>
+            </div>
+          </div>
+
+          <!-- Vehicle Filters -->
+          <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+            <input type="text" id="searchInput" class="form-control" placeholder="🔍 Search Plate, Owner, Phone, City..." oninput="applyVehicleFilters()">
+            <select id="bloodFilter" class="form-control" onchange="applyVehicleFilters()">
+              <option value="ALL">All Blood Groups</option>
+              <option value="O+">O+ Positive</option>
+              <option value="A+">A+ Positive</option>
+              <option value="B+">B+ Positive</option>
+              <option value="AB+">AB+ Positive</option>
+            </select>
+            <select id="statusFilter" class="form-control" onchange="applyVehicleFilters()">
+              <option value="ALL">All Statuses</option>
+              <option value="GUARD_ACTIVE">Guard Active</option>
+              <option value="STANDBY">Standby</option>
+              <option value="SUSPENDED">Suspended</option>
+            </select>
+            <button class="btn btn-secondary" onclick="loadVehicles()">🔄 Refresh</button>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Vehicle Plate</th>
+                  <th>Model</th>
+                  <th>Owner</th>
+                  <th>Location</th>
+                  <th>Medical Vault</th>
+                  <th>Emergency</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="vehicleTableBody">
+                <tr><td colspan="8" style="text-align: center; padding: 24px;">Loading fleet database...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================== -->
+      <!-- SECTION 4: CUSTOMER ORDERS -->
+      <!-- ==================================================== -->
+      <div id="sec-orders" class="admin-section">
+        <div class="card-panel">
+          <div class="card-header">
+            <div>
+              <div class="card-title">📦 Customer Decal Orders & Dispatches</div>
+              <div class="card-sub">Live sticker orders from web store and mobile app with tracking & master activation keys</div>
+            </div>
+            <button class="btn btn-secondary" onclick="loadOrders()">🔄 Refresh Orders</button>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Plate</th>
+                  <th>Decal Plan</th>
+                  <th>Amount</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Delivery</th>
+                  <th>Master Key</th>
+                </tr>
+              </thead>
+              <tbody id="ordersTableBody">
+                <tr><td colspan="9" style="text-align: center; padding: 24px;">Loading orders database...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================== -->
+      <!-- SECTION 5: PAYMENT GATEWAYS -->
+      <!-- ==================================================== -->
+      <div id="sec-payments" class="admin-section">
+        <div class="card-panel">
+          <div class="card-header">
+            <div>
+              <div class="card-title">💳 Payment Gateway Integrations</div>
+              <div class="card-sub">Configure checkout gateways for decal sticker purchases and premium subscriptions</div>
+            </div>
+            <button class="btn btn-primary" onclick="savePaymentConfig()">💾 Save Payment Settings</button>
+          </div>
+
+          <!-- Select Gateway Cards -->
+          <div class="form-group">
+            <label class="form-label">Active Primary Payment Gateway</label>
+            <div class="selector-grid">
+              <div id="card-gateway-mock" class="selector-card selected" onclick="selectPaymentGateway('mock')">
+                <div style="font-size: 24px;">🧪</div>
+                <div class="selector-title">Mock Sandbox</div>
+                <div class="selector-sub">Zero-friction instant test</div>
+              </div>
+              <div id="card-gateway-razorpay" class="selector-card" onclick="selectPaymentGateway('razorpay')">
+                <div style="font-size: 24px;">🇮🇳</div>
+                <div class="selector-title">Razorpay</div>
+                <div class="selector-sub">UPI, Cards, NetBanking</div>
+              </div>
+              <div id="card-gateway-cashfree" class="selector-card" onclick="selectPaymentGateway('cashfree')">
+                <div style="font-size: 24px;">⚡</div>
+                <div class="selector-title">Cashfree</div>
+                <div class="selector-sub">Auto-settlement UPI</div>
+              </div>
+              <div id="card-gateway-stripe" class="selector-card" onclick="selectPaymentGateway('stripe')">
+                <div style="font-size: 24px;">🌍</div>
+                <div class="selector-title">Stripe</div>
+                <div class="selector-sub">Global Cards & Wallets</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Environment Mode</label>
+              <select id="payTestMode" class="form-control">
+                <option value="true">🧪 Test / Sandbox Mode (Safe Testing)</option>
+                <option value="false">🚀 Production / Live Mode</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Default Currency</label>
+              <input type="text" id="payCurrency" class="form-control" value="INR">
+            </div>
+          </div>
+
+          <!-- Razorpay Settings -->
+          <div style="background: #F8FAFC; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 16px;">
+            <div style="font-weight: 800; font-size: 13px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+              <span>🇮🇳</span> Razorpay Configuration
+            </div>
+            <div class="form-grid-3">
+              <div class="form-group">
+                <label class="form-label">Key ID</label>
+                <input type="text" id="rzpKeyId" class="form-control" placeholder="rzp_test_...">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Key Secret</label>
+                <input type="password" id="rzpKeySecret" class="form-control" placeholder="••••••••••••••••">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Webhook Secret</label>
+                <input type="text" id="rzpWebhookSecret" class="form-control" placeholder="whsec_...">
+              </div>
+            </div>
+          </div>
+
+          <!-- UPI Direct VPA -->
+          <div style="background: #F8FAFC; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 16px;">
+            <div style="font-weight: 800; font-size: 13px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+              <span>📱</span> Direct UPI QR Merchant Configuration
+            </div>
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">Merchant VPA / UPI ID</label>
+                <input type="text" id="upiVpa" class="form-control" placeholder="safeqr@okaxis">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Merchant Display Name</label>
+                <input type="text" id="upiMerchantName" class="form-control" placeholder="SafeQR Technologies India">
+              </div>
+            </div>
+          </div>
+
+          <!-- Test Payment Action -->
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <button class="btn btn-secondary" onclick="testPaymentConnection()">🧪 Test Gateway Connection & Webhook Handshake</button>
+            <span id="paymentTestResult" style="font-size: 12px; font-weight: 700; color: var(--accent-green);"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================== -->
+      <!-- SECTION 6: OTP & SMS / EMAIL -->
+      <!-- ==================================================== -->
+      <div id="sec-otp" class="admin-section">
+        <div class="card-panel">
+          <div class="card-header">
+            <div>
+              <div class="card-title">📲 OTP, SMS & Email Service Integrations</div>
+              <div class="card-sub">Configure real-time SMS delivery for mobile login OTPs and emergency incident alerts</div>
+            </div>
+            <button class="btn btn-primary" onclick="saveOtpConfig()">💾 Save Service Settings</button>
+          </div>
+
+          <!-- SMS Gateway Selector -->
+          <div class="form-group">
+            <label class="form-label">Active SMS Gateway</label>
+            <div class="selector-grid">
+              <div id="card-sms-mock" class="selector-card selected" onclick="selectSmsGateway('mock')">
+                <div style="font-size: 24px;">🧪</div>
+                <div class="selector-title">Mock SMS</div>
+                <div class="selector-sub">Demo code 1056</div>
+              </div>
+              <div id="card-sms-fast2sms" class="selector-card" onclick="selectSmsGateway('fast2sms')">
+                <div style="font-size: 24px;">🇮🇳</div>
+                <div class="selector-title">Fast2SMS</div>
+                <div class="selector-sub">Quick Indian SMS API</div>
+              </div>
+              <div id="card-sms-msg91" class="selector-card" onclick="selectSmsGateway('msg91')">
+                <div style="font-size: 24px;">⚡</div>
+                <div class="selector-title">MSG91</div>
+                <div class="selector-sub">DLT Template Routing</div>
+              </div>
+              <div id="card-sms-twilio" class="selector-card" onclick="selectSmsGateway('twilio')">
+                <div style="font-size: 24px;">🌍</div>
+                <div class="selector-title">Twilio</div>
+                <div class="selector-sub">Global SMS Dispatch</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fast2SMS / MSG91 Config -->
+          <div class="form-grid-3">
+            <div class="form-group">
+              <label class="form-label">Fast2SMS API Key</label>
+              <input type="text" id="fast2smsKey" class="form-control" placeholder="Fast2SMS authorization key">
+            </div>
+            <div class="form-group">
+              <label class="form-label">MSG91 Auth Key</label>
+              <input type="text" id="msg91AuthKey" class="form-control" placeholder="MSG91 auth key">
+            </div>
+            <div class="form-group">
+              <label class="form-label">MSG91 Sender ID</label>
+              <input type="text" id="msg91SenderId" class="form-control" value="SAFEQR">
+            </div>
+          </div>
+
+          <!-- Email SMTP Settings -->
+          <div style="background: #F8FAFC; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 16px; margin-bottom: 16px;">
+            <div style="font-weight: 800; font-size: 13px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+              <span>✉️</span> Email SMTP Settings (For OTP & Email Incident Alerts)
+            </div>
+            <div class="form-grid-3">
+              <div class="form-group">
+                <label class="form-label">SMTP Host</label>
+                <input type="text" id="smtpHost" class="form-control" value="smtp.gmail.com">
+              </div>
+              <div class="form-group">
+                <label class="form-label">SMTP Port</label>
+                <input type="number" id="smtpPort" class="form-control" value="587">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Sender Name & Email</label>
+                <input type="text" id="smtpSender" class="form-control" value="SafeQR Alerts <notifications@safeqr.in>">
+              </div>
+            </div>
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">SMTP Username</label>
+                <input type="text" id="smtpUser" class="form-control" placeholder="user@safeqr.in">
+              </div>
+              <div class="form-group">
+                <label class="form-label">SMTP Password</label>
+                <input type="password" id="smtpPass" class="form-control" placeholder="••••••••••••••••">
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Testing Trigger -->
+          <div class="preview-card">
+            <div class="preview-label">🧪 Test Live OTP Dispatch</div>
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+              <input type="text" id="testOtpRecipient" class="form-control" style="width: 280px;" placeholder="Enter phone (+91...) or email">
+              <button class="btn btn-secondary" onclick="sendTestOtp('sms')">📱 Send Test SMS</button>
+              <button class="btn btn-secondary" onclick="sendTestOtp('email')">✉️ Send Test Email</button>
+              <span id="otpTestStatus" style="font-size: 12px; font-weight: 700; color: var(--accent-green);"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================== -->
+      <!-- SECTION 7: PRICING & SUBSCRIPTIONS -->
+      <!-- ==================================================== -->
+      <div id="sec-pricing" class="admin-section">
+        <div class="card-panel">
+          <div class="card-header">
+            <div>
+              <div class="card-title">🏷️ Decal Plans, Pricing & Calling Allowances</div>
+              <div class="card-sub">Change sticker prices, discount badges, and unpurchased free call limits in real-time</div>
+            </div>
+            <button class="btn btn-primary" onclick="savePricingConfig()">💾 Save Pricing</button>
+          </div>
+
+          <!-- Starter Decal Pack -->
+          <div style="background: #F8FAFC; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 18px; margin-bottom: 18px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <div style="font-weight: 900; font-size: 14px;">🌟 Starter Reflective Decal Pack</div>
+              <span class="status-badge status-active">Active in Shop</span>
+            </div>
+            <div class="form-grid-3">
+              <div class="form-group">
+                <label class="form-label">Display Title</label>
+                <input type="text" id="starterTitle" class="form-control" value="Starter Reflective Decal">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Active Price (₹)</label>
+                <input type="number" id="starterPrice" class="form-control" value="199">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Original / Cut Price (₹)</label>
+                <input type="number" id="starterOriginalPrice" class="form-control" value="499">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Subtitle & Description</label>
+              <input type="text" id="starterSubtitle" class="form-control" value="Single Windshield Decal with QR Shield">
+            </div>
+          </div>
+
+          <!-- Pro Dual Pack -->
+          <div style="background: #F8FAFC; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 18px; margin-bottom: 18px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <div style="font-weight: 900; font-size: 14px;">👑 Pro Dual Holographic Shield (2-Pack)</div>
+              <span class="status-badge status-active">Active in Shop</span>
+            </div>
+            <div class="form-grid-3">
+              <div class="form-group">
+                <label class="form-label">Display Title</label>
+                <input type="text" id="proTitle" class="form-control" value="Pro Dual Holographic Shield">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Active Price (₹)</label>
+                <input type="number" id="proPrice" class="form-control" value="399">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Original / Cut Price (₹)</label>
+                <input type="number" id="proOriginalPrice" class="form-control" value="799">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Subtitle & Description</label>
+              <input type="text" id="proSubtitle" class="form-control" value="Front & Rear Windshield 2-Pack">
+            </div>
+          </div>
+
+          <!-- Free Calls Tier -->
+          <div style="background: #FFFBEB; border: 1px solid #FDE68A; border-radius: var(--radius-sm); padding: 18px;">
+            <div style="font-weight: 900; font-size: 14px; color: #92400E; margin-bottom: 8px;">
+              📞 Unpurchased User Free Calling Allowance
+            </div>
+            <div style="font-size: 12px; color: #78350F; margin-bottom: 12px;">
+              Number of free masked calls allowed for users who have NOT yet purchased a decal sticker. (When exhausted, app asks user to purchase in Shop).
+            </div>
+            <div style="width: 220px;">
+              <label class="form-label">Free Calls Limit</label>
+              <input type="number" id="freeCallsAllowance" class="form-control" value="3">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================== -->
+      <!-- SECTION 8: DEMO VIDEO LINK -->
+      <!-- ==================================================== -->
+      <div id="sec-demo" class="admin-section">
+        <div class="card-panel">
+          <div class="card-header">
+            <div>
+              <div class="card-title">🎬 Demo Video & Explainer Link</div>
+              <div class="card-sub">When users tap 'Demo' on the app dashboard, this video link opens or plays</div>
+            </div>
+            <button class="btn btn-primary" onclick="saveDemoConfig()">💾 Save Demo Link</button>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">YouTube Video URL / Embed Link</label>
+            <input type="text" id="demoVideoUrl" class="form-control" placeholder="https://www.youtube.com/watch?v=..." oninput="updateDemoPreview()">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Video Title</label>
+            <input type="text" id="demoVideoTitle" class="form-control" value="How SafeQR Works & Mask Calling Demo">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Explainer Steps & Description</label>
+            <textarea id="demoVideoDesc" class="form-control" rows="4">1. Affix QR sticker to car windshield.
+2. When blocked, bystanders scan the QR.
+3. SafeQR sends an instant alert to your phone and enables masked calling.
+4. You move your car without any arguments or spam!</textarea>
+          </div>
+
+          <!-- Video Preview -->
+          <div class="preview-card">
+            <div class="preview-label">📺 Live Embedded Preview</div>
+            <div id="demoVideoPreviewContainer" style="max-width: 600px; border-radius: 8px; overflow: hidden; background: #000; min-height: 250px; display: flex; align-items: center; justify-content: center; color: #FFF;">
+              Preview will load here once URL is verified.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================== -->
+      <!-- SECTION 9: HOME BANNERS & LOGOS -->
+      <!-- ==================================================== -->
+      <div id="sec-banners" class="admin-section">
+        <div class="card-panel">
+          <div class="card-header">
+            <div>
+              <div class="card-title">🖼️ Home Dashboard Promo Carousel</div>
+              <div class="card-sub">Manage auto-sliding banners, promo text, custom images, or full-width banners in real-time</div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-secondary" onclick="addNewBannerSlide()">+ Add New Slide</button>
+              <button class="btn btn-primary" onclick="saveBannersConfig()">💾 Save Banners</button>
+            </div>
+          </div>
+
+          <div id="bannersListContainer" style="display: flex; flex-direction: column; gap: 16px;">
+            <!-- Injected via JavaScript -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================== -->
+      <!-- SECTION 10: ONBOARDING SCREENS -->
+      <!-- ==================================================== -->
+      <div id="sec-onboarding" class="admin-section">
+        <div class="card-panel">
+          <div class="card-header">
+            <div>
+              <div class="card-title">🚀 Startup Onboarding Carousel (3 Screens)</div>
+              <div class="card-sub">Change the headline, subtitle, or switch to full-size hero banner images shown when the APK starts</div>
+            </div>
+            <button class="btn btn-primary" onclick="saveOnboardingConfig()">💾 Save Onboarding</button>
+          </div>
+
+          <div id="onboardingListContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px;">
+            <!-- Injected via JavaScript -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================== -->
+      <!-- SECTION 11: TOLLFREE & HELPLINE -->
+      <!-- ==================================================== -->
+      <div id="sec-helpline" class="admin-section">
+        <div class="card-panel">
+          <div class="card-header">
+            <div>
+              <div class="card-title">📞 Tollfree Helpline & Emergency Numbers</div>
+              <div class="card-sub">Control customer service numbers, WhatsApp helpline, and police/ambulance hotlines across the app</div>
+            </div>
+            <button class="btn btn-primary" onclick="saveHelplineConfig()">💾 Save Helpline Numbers</button>
+          </div>
+
+          <div class="form-grid-3">
+            <div class="form-group">
+              <label class="form-label">Tollfree Helpline Number</label>
+              <input type="text" id="helpTollfree" class="form-control" value="1800 202 9900">
+            </div>
+            <div class="form-group">
+              <label class="form-label">WhatsApp Support Number</label>
+              <input type="text" id="helpWhatsapp" class="form-control" value="+91 88397 86266">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Support Email Address</label>
+              <input type="text" id="helpEmail" class="form-control" value="support@safeqr.in">
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">National Police Dispatch</label>
+              <input type="text" id="helpPolice" class="form-control" value="112">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Ambulance Hotline</label>
+              <input type="text" id="helpAmbulance" class="form-control" value="108">
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Application Branding Name</label>
+              <input type="text" id="helpAppName" class="form-control" value="SafeQR+">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Marketing Tagline</label>
+              <input type="text" id="helpTagline" class="form-control" value="India's #1 Smart Vehicle QR Safety Shield">
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ==================================================== -->
+<!-- TOAST NOTIFICATION -->
+<!-- ==================================================== -->
+<div id="toast" class="toast-notice">
+  <span>✓</span>
+  <span id="toastMsg">Changes saved and broadcasted to mobile app!</span>
+</div>
+
+<!-- ==================================================== -->
+<!-- CREATE / EDIT VEHICLE MODAL -->
+<!-- ==================================================== -->
+<div id="createModal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2 class="modal-title">Create / Edit SafeQR Vehicle</h2>
+      <button class="modal-close" onclick="closeCreateModal()">&times;</button>
+    </div>
+    <form onsubmit="handleSaveVehicle(event)">
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label class="form-label">Registration Plate*</label>
+          <input type="text" id="vehPlate" class="form-control" placeholder="MP-19-CA-1056" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Model & Color*</label>
+          <input type="text" id="vehModel" class="form-control" placeholder="Hyundai Creta Turbo (Burgundy)" required>
+        </div>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label class="form-label">Owner Name</label>
+          <input type="text" id="vehOwner" class="form-control" placeholder="MohdEzaz">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Owner Mobile</label>
+          <input type="text" id="vehPhone" class="form-control" placeholder="8839786266">
+        </div>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label class="form-label">City</label>
+          <input type="text" id="vehCity" class="form-control" placeholder="Satna">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Blood Group</label>
+          <input type="text" id="vehBlood" class="form-control" placeholder="O+ Positive">
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 10px;">
+        💾 Save Vehicle Shield
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- ==================================================== -->
+<!-- EXCEL IMPORT MODAL -->
+<!-- ==================================================== -->
+<div id="importModal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2 class="modal-title">Bulk Import Vehicles via Excel (.xlsx)</h2>
+      <button class="modal-close" onclick="closeImportModal()">&times;</button>
+    </div>
+    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">
+      Upload an Excel workbook containing vehicle plates, owners, medical blood group, and emergency contacts.
+    </p>
+    <div class="form-group">
+      <input type="file" id="excelFileInput" accept=".xlsx,.xls" class="form-control">
+    </div>
+    <div style="display: flex; gap: 10px; margin-top: 14px;">
+      <button class="btn btn-success" onclick="uploadExcel()">📤 Upload & Import</button>
+      <a href="/api/admin/sample-excel" class="btn btn-secondary">📥 Download Sample Template</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentConfig = null;
+  let allUsers = [];
+  let allVehicles = [];
+  let allOrders = [];
+
+  // ====================================================
+  // NAVIGATION & TAB SWITCHING
+  // ====================================================
+  const sectionMeta = {
+    overview: { title: 'Overview & Metrics', sub: 'Live synchronized SafeQR ecosystem analytics & status' },
+    users: { title: 'User Management', sub: 'Handle registered motorists, addresses, emergency vaults & free calling limits' },
+    vehicles: { title: 'Fleet & Vehicles', sub: 'Manage registered vehicle shields, QR tokens & bulk Excel operations' },
+    orders: { title: 'Customer Orders', sub: 'Track decal orders, payments, shipments & master activation keys' },
+    payments: { title: 'Payment Gateways', sub: 'Set up Razorpay, Cashfree, Stripe & UPI keys and sandbox mode' },
+    otp: { title: 'OTP, SMS & Email', sub: 'Configure Fast2SMS, MSG91, Twilio & SMTP for instant user verification' },
+    pricing: { title: 'Pricing & Plans', sub: 'Control decal costs, discounts, and unpurchased free call limits' },
+    demo: { title: 'Demo Video Link', sub: 'Update the dashboard YouTube explainer video link & instructions' },
+    banners: { title: 'Home Banners', sub: 'Add, edit, or upload full-size promo carousel images and copy' },
+    onboarding: { title: 'Onboarding Carousel', sub: 'Customize the 3 startup slides shown when the mobile app opens' },
+    helpline: { title: 'Tollfree & Helpline', sub: 'Manage customer service, WhatsApp helpline & national emergency hotlines' }
+  };
+
+  function switchSection(secId) {
+    document.querySelectorAll('.admin-section').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+    const targetSec = document.getElementById('sec-' + secId);
+    if (targetSec) targetSec.classList.add('active');
+
+    // Highlight nav item
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => {
+      if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(secId)) {
+        item.classList.add('active');
+      }
+    });
+
+    // Update Topbar
+    if (sectionMeta[secId]) {
+      document.getElementById('pageTitle').innerText = sectionMeta[secId].title;
+      document.getElementById('pageSubtitle').innerText = sectionMeta[secId].sub;
+    }
+
+    // Close mobile sidebar
+    document.getElementById('sidebar').classList.remove('open');
+  }
+
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+  }
+
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    document.getElementById('toastMsg').innerText = msg || 'Changes saved successfully!';
+    toast.style.display = 'flex';
+    setTimeout(() => { toast.style.display = 'none'; }, 3500);
+  }
+
+  // ====================================================
+  // DATA LOADING
+  // ====================================================
+  async function loadAllData() {
+    try {
+      await Promise.all([
+        loadConfig(),
+        loadMetrics(),
+        loadUsers(),
+        loadVehicles(),
+        loadOrders()
+      ]);
+    } catch (e) {
+      console.error('Error loading data:', e);
+    }
+  }
+
+  async function loadConfig() {
+    const res = await fetch('/api/admin/config');
+    const data = await res.json();
+    if (data.success && data.config) {
+      currentConfig = data.config;
+      populateConfigForms(data.config);
+    }
+  }
+
+  async function loadMetrics() {
+    const res = await fetch('/api/admin/metrics');
+    const data = await res.json();
+    document.getElementById('metricVehicles').innerText = data.totalVehicles || '0';
+    document.getElementById('metricOrders').innerText = data.totalOrders || '0';
+    document.getElementById('metricRevenue').innerText = '₹' + (data.totalRevenue || 0).toLocaleString();
+    document.getElementById('navVehiclesCount').innerText = data.totalVehicles || '0';
+    document.getElementById('navOrdersCount').innerText = data.totalOrders || '0';
+  }
+
+  async function loadUsers() {
+    const res = await fetch('/api/admin/users');
+    const data = await res.json();
+    allUsers = data.users || [];
+    document.getElementById('metricUsers').innerText = allUsers.length;
+    document.getElementById('navUsersCount').innerText = allUsers.length;
+    renderUsersTable(allUsers);
+  }
+
+  async function loadVehicles() {
+    const res = await fetch('/api/vehicles');
+    const data = await res.json();
+    allVehicles = data.vehicles || [];
+    renderVehiclesTable(allVehicles);
+  }
+
+  async function loadOrders() {
+    const res = await fetch('/api/orders');
+    const data = await res.json();
+    allOrders = data.orders || [];
+    renderOrdersTable(allOrders);
+  }
+
+  // ====================================================
+  // POPULATE CONFIG FORMS
+  // ====================================================
+  function populateConfigForms(config) {
+    // Helpline
+    if (config.helpline) {
+      document.getElementById('helpTollfree').value = config.helpline.tollfree || '';
+      document.getElementById('helpWhatsapp').value = config.helpline.whatsapp || '';
+      document.getElementById('helpEmail').value = config.helpline.email || '';
+      document.getElementById('helpPolice').value = config.helpline.police || '';
+      document.getElementById('helpAmbulance').value = config.helpline.ambulance || '';
+      document.getElementById('helpAppName').value = config.helpline.appName || '';
+      document.getElementById('helpTagline').value = config.helpline.tagline || '';
+    }
+
+    // Pricing
+    if (config.pricing) {
+      document.getElementById('starterTitle').value = config.pricing.starterTitle || '';
+      document.getElementById('starterPrice').value = config.pricing.starterPrice || 199;
+      document.getElementById('starterOriginalPrice').value = config.pricing.starterOriginalPrice || 499;
+      document.getElementById('starterSubtitle').value = config.pricing.starterSubtitle || '';
+
+      document.getElementById('proTitle').value = config.pricing.proTitle || '';
+      document.getElementById('proPrice').value = config.pricing.proPrice || 399;
+      document.getElementById('proOriginalPrice').value = config.pricing.proOriginalPrice || 799;
+      document.getElementById('proSubtitle').value = config.pricing.proSubtitle || '';
+
+      document.getElementById('freeCallsAllowance').value = config.pricing.freeCallsAllowance !== undefined ? config.pricing.freeCallsAllowance : 3;
+    }
+
+    // Demo Video
+    if (config.demoVideo) {
+      document.getElementById('demoVideoUrl').value = config.demoVideo.url || '';
+      document.getElementById('demoVideoTitle').value = config.demoVideo.title || '';
+      document.getElementById('demoVideoDesc').value = config.demoVideo.description || '';
+      updateDemoPreview();
+    }
+
+    // Payment Gateways
+    if (config.paymentGateways) {
+      const gw = config.paymentGateways.activeGateway || 'mock';
+      selectPaymentGateway(gw);
+      document.getElementById('payTestMode').value = String(config.paymentGateways.testMode);
+      document.getElementById('payCurrency').value = config.paymentGateways.currency || 'INR';
+
+      if (config.paymentGateways.razorpay) {
+        document.getElementById('rzpKeyId').value = config.paymentGateways.razorpay.keyId || '';
+        document.getElementById('rzpKeySecret').value = config.paymentGateways.razorpay.keySecret || '';
+        document.getElementById('rzpWebhookSecret').value = config.paymentGateways.razorpay.webhookSecret || '';
+      }
+      if (config.paymentGateways.upi) {
+        document.getElementById('upiVpa').value = config.paymentGateways.upi.vpa || '';
+        document.getElementById('upiMerchantName').value = config.paymentGateways.upi.merchantName || '';
+      }
+    }
+
+    // OTP Services
+    if (config.otpServices) {
+      const smsGw = config.otpServices.activeSmsGateway || 'mock';
+      selectSmsGateway(smsGw);
+      document.getElementById('fast2smsKey').value = config.otpServices.fast2sms?.apiKey || '';
+      document.getElementById('msg91AuthKey').value = config.otpServices.msg91?.authKey || '';
+      document.getElementById('msg91SenderId').value = config.otpServices.msg91?.senderId || 'SAFEQR';
+
+      if (config.otpServices.emailSmtp) {
+        document.getElementById('smtpHost').value = config.otpServices.emailSmtp.host || 'smtp.gmail.com';
+        document.getElementById('smtpPort').value = config.otpServices.emailSmtp.port || 587;
+        document.getElementById('smtpUser').value = config.otpServices.emailSmtp.user || '';
+        document.getElementById('smtpPass').value = config.otpServices.emailSmtp.pass || '';
+        document.getElementById('smtpSender').value = config.otpServices.emailSmtp.sender || '';
+      }
+    }
+
+    // Render Banners List
+    renderBannersEditor(config.banners || []);
+
+    // Render Onboarding List
+    renderOnboardingEditor(config.onboarding || []);
+  }
+
+  // ====================================================
+  // USERS TABLE
+  // ====================================================
+  function renderUsersTable(users) {
+    const tbody = document.getElementById('usersTableBody');
+    if (!users || users.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 24px;">No registered users found.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = users.map(u => {
+      const status = u.status || 'ACTIVE';
+      const isSuspended = status === 'SUSPENDED';
+      const freeCalls = u.freeCallsRemaining !== undefined ? u.freeCallsRemaining : (currentConfig?.pricing?.freeCallsAllowance || 3);
+
+      return `
+        <tr>
+          <td>
+            <div style="font-weight: 800; font-size: 13px;">${u.name || 'SafeQR User'}</div>
+            <div style="font-size: 11px; color: var(--text-muted);">${u.email || 'No email registered'}</div>
+          </td>
+          <td>
+            <div style="font-weight: 700; font-family: monospace;">+91 ${u.phone}</div>
+          </td>
+          <td>
+            <div>${u.city || 'Satna'}, ${u.state || 'MP'}</div>
+            <div style="font-size: 10px; color: var(--text-muted);">${u.address || ''} (${u.pincode || ''})</div>
+          </td>
+          <td>
+            <span style="font-weight: 800;">${u.vehiclesCount || 0}</span> vehicles
+          </td>
+          <td>
+            <span class="status-badge ${freeCalls > 0 ? 'status-active' : 'status-suspended'}">${freeCalls} / 3 Free</span>
+          </td>
+          <td>
+            <span class="status-badge ${isSuspended ? 'status-suspended' : 'status-active'}">${status}</span>
+          </td>
+          <td>
+            <div style="display: flex; gap: 6px;">
+              <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="resetCalls('${u.phone}')">🔄 Reset Calls</button>
+              <button class="btn ${isSuspended ? 'btn-success' : 'btn-danger'}" style="padding: 4px 8px; font-size: 11px;" onclick="toggleUserStatus('${u.phone}', '${isSuspended ? 'ACTIVE' : 'SUSPENDED'}')">
+                ${isSuspended ? 'Activate' : 'Suspend'}
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function filterUsersTable() {
+    const q = document.getElementById('userSearchInput').value.toLowerCase().trim();
+    const status = document.getElementById('userStatusFilter').value;
+
+    const filtered = allUsers.filter(u => {
+      const matchQ = !q || (u.name && u.name.toLowerCase().includes(q)) || (u.phone && u.phone.includes(q)) || (u.city && u.city.toLowerCase().includes(q));
+      const matchStatus = status === 'ALL' || (u.status || 'ACTIVE') === status;
+      return matchQ && matchStatus;
+    });
+    renderUsersTable(filtered);
+  }
+
+  async function resetCalls(phone) {
+    if (!confirm(`Reset free call limit for user +91 ${phone} to 3/3?`)) return;
+    const res = await fetch(`/api/admin/users/${phone}/reset-calls`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ count: currentConfig?.pricing?.freeCallsAllowance || 3 })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast(`Free calls for +91 ${phone} reset to ${data.user.freeCallsRemaining}`);
+      loadUsers();
+    }
+  }
+
+  async function toggleUserStatus(phone, newStatus) {
+    if (!confirm(`Are you sure you want to mark user +91 ${phone} as ${newStatus}?`)) return;
+    const res = await fetch(`/api/admin/users/${phone}/status`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast(`User +91 ${phone} is now ${newStatus}`);
+      loadUsers();
+    }
+  }
+
+  // ====================================================
+  // VEHICLES & FLEET TABLE
+  // ====================================================
+  function renderVehiclesTable(vehicles) {
+    const tbody = document.getElementById('vehicleTableBody');
+    if (!vehicles || vehicles.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 24px;">No vehicles found.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = vehicles.map(v => {
+      const statusClass = v.guardStatus === 'GUARD_ACTIVE' ? 'status-active' : (v.guardStatus === 'STANDBY' ? 'status-standby' : 'status-suspended');
+      return `
+        <tr>
+          <td><span class="plate-badge">${v.registrationPlate}</span></td>
+          <td>
+            <div style="font-weight: 700;">${v.model || 'Standard'}</div>
+            <div style="font-size: 11px; color: var(--text-muted);">${v.vehicleType || 'Car'}</div>
+          </td>
+          <td>
+            <div style="font-weight: 700;">${v.ownerName || 'Owner'}</div>
+            <div style="font-size: 11px; color: var(--text-muted);">${v.ownerPhone || 'No Phone'}</div>
+          </td>
+          <td>${v.city || 'Satna'}, ${v.state || 'MP'}</td>
+          <td>
+            <span class="status-badge status-active">${v.medical?.bloodGroup || 'O+'}</span>
+          </td>
+          <td>${(v.emergencyContacts || []).length} Contacts</td>
+          <td><span class="status-badge ${statusClass}">${v.guardStatus || 'GUARD_ACTIVE'}</span></td>
+          <td>
+            <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="viewVehicleQR('${v.registrationPlate}')">QR Decal</button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function applyVehicleFilters() {
+    const q = document.getElementById('searchInput').value.toLowerCase().trim();
+    const blood = document.getElementById('bloodFilter').value;
+    const status = document.getElementById('statusFilter').value;
+
+    const filtered = allVehicles.filter(v => {
+      const matchQ = !q || (v.registrationPlate && v.registrationPlate.toLowerCase().includes(q)) || (v.ownerName && v.ownerName.toLowerCase().includes(q)) || (v.ownerPhone && v.ownerPhone.includes(q));
+      const matchBlood = blood === 'ALL' || (v.medical?.bloodGroup && v.medical.bloodGroup.includes(blood));
+      const matchStatus = status === 'ALL' || v.guardStatus === status;
+      return matchQ && matchBlood && matchStatus;
+    });
+    renderVehiclesTable(filtered);
+  }
+
+  function exportExcel() {
+    window.location.href = '/api/admin/export/excel';
+  }
+
+  function openImportModal() { document.getElementById('importModal').style.display = 'flex'; }
+  function closeImportModal() { document.getElementById('importModal').style.display = 'none'; }
+
+  async function uploadExcel() {
+    const input = document.getElementById('excelFileInput');
+    if (!input.files || input.files.length === 0) return alert('Please select an Excel file first.');
+    const formData = new FormData();
+    formData.append('file', input.files[0]);
+
+    const res = await fetch('/api/admin/import/excel', { method: 'POST', body: formData });
+    const data = await res.json();
+    if (data.success) {
+      showToast(data.message || 'Excel imported successfully!');
+      closeImportModal();
+      loadVehicles();
+    } else {
+      alert('Import failed: ' + (data.error || 'Unknown error'));
+    }
+  }
+
+  function openCreateModal() { document.getElementById('createModal').style.display = 'flex'; }
+  function closeCreateModal() { document.getElementById('createModal').style.display = 'none'; }
+
+  async function handleSaveVehicle(e) {
+    e.preventDefault();
+    const plate = document.getElementById('vehPlate').value.trim();
+    const model = document.getElementById('vehModel').value.trim();
+    const ownerName = document.getElementById('vehOwner').value.trim();
+    const ownerPhone = document.getElementById('vehPhone').value.trim();
+    const city = document.getElementById('vehCity').value.trim();
+    const blood = document.getElementById('vehBlood').value.trim();
+
+    const res = await fetch('/api/vehicles', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        registrationPlate: plate,
+        model,
+        ownerName,
+        ownerPhone,
+        city,
+        state: 'Madhya Pradesh',
+        country: 'India',
+        medical: { bloodGroup: blood || 'O+ Positive', allergies: ['None'] }
+      })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast('Vehicle created successfully!');
+      closeCreateModal();
+      loadVehicles();
+    }
+  }
+
+  function viewVehicleQR(plate) {
+    window.open(`/v/${plate.replace(/[^A-Za-z0-9]/g, '').toLowerCase()}`, '_blank');
+  }
+
+  // ====================================================
+  // ORDERS TABLE
+  // ====================================================
+  function renderOrdersTable(orders) {
+    const tbody = document.getElementById('ordersTableBody');
+    if (!orders || orders.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 24px;">No customer orders found.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = orders.map(o => `
+      <tr>
+        <td style="font-weight: 800; font-family: monospace;">${o.orderId || o.id}</td>
+        <td>
+          <div style="font-weight: 700;">${o.ownerName || 'Customer'}</div>
+          <div style="font-size: 11px; color: var(--text-muted);">${o.ownerPhone || ''}</div>
+        </td>
+        <td><span class="plate-badge">${o.vehiclePlate || 'MP-19-CA-1056'}</span></td>
+        <td>${o.plan || 'Pro Shield'}</td>
+        <td style="font-weight: 800;">₹${o.amount || 399}</td>
+        <td>${o.createdAt || 'Recent'}</td>
+        <td><span class="status-badge status-active">${o.status || 'PAID'}</span></td>
+        <td><span class="status-badge status-standby">${o.deliveryStatus || 'PROCESSING'}</span></td>
+        <td><code style="background: #F1F5F9; padding: 2px 6px; border-radius: 4px; font-size: 11px;">${o.activationKey || 'N/A'}</code></td>
+      </tr>
+    `).join('');
+  }
+
+  // ====================================================
+  // PAYMENT CONFIG & TESTING
+  // ====================================================
+  let activePaymentGateway = 'mock';
+  function selectPaymentGateway(gw) {
+    activePaymentGateway = gw;
+    document.querySelectorAll('[id^="card-gateway-"]').forEach(el => el.classList.remove('selected'));
+    const target = document.getElementById('card-gateway-' + gw);
+    if (target) target.classList.add('selected');
+  }
+
+  async function savePaymentConfig() {
+    const payload = {
+      paymentGateways: {
+        activeGateway: activePaymentGateway,
+        testMode: document.getElementById('payTestMode').value === 'true',
+        currency: document.getElementById('payCurrency').value,
+        razorpay: {
+          keyId: document.getElementById('rzpKeyId').value,
+          keySecret: document.getElementById('rzpKeySecret').value,
+          webhookSecret: document.getElementById('rzpWebhookSecret').value,
+        },
+        upi: {
+          vpa: document.getElementById('upiVpa').value,
+          merchantName: document.getElementById('upiMerchantName').value,
+        }
+      }
+    };
+    await updateBackendConfig(payload, 'Payment gateway configuration saved!');
+  }
+
+  async function testPaymentConnection() {
+    const status = document.getElementById('paymentTestResult');
+    status.innerText = 'Testing gateway handshake...';
+    const res = await fetch('/api/admin/test-payment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ gateway: activePaymentGateway })
+    });
+    const data = await res.json();
+    status.innerText = '✓ ' + data.message;
+    showToast('Payment gateway test successful!');
+  }
+
+  // ====================================================
+  // OTP & SMS / EMAIL CONFIG & TESTING
+  // ====================================================
+  let activeSmsGateway = 'mock';
+  function selectSmsGateway(gw) {
+    activeSmsGateway = gw;
+    document.querySelectorAll('[id^="card-sms-"]').forEach(el => el.classList.remove('selected'));
+    const target = document.getElementById('card-sms-' + gw);
+    if (target) target.classList.add('selected');
+  }
+
+  async function saveOtpConfig() {
+    const payload = {
+      otpServices: {
+        activeSmsGateway: activeSmsGateway,
+        mockOtp: '1056',
+        fast2sms: { apiKey: document.getElementById('fast2smsKey').value },
+        msg91: {
+          authKey: document.getElementById('msg91AuthKey').value,
+          senderId: document.getElementById('msg91SenderId').value
+        },
+        emailSmtp: {
+          host: document.getElementById('smtpHost').value,
+          port: Number(document.getElementById('smtpPort').value),
+          user: document.getElementById('smtpUser').value,
+          pass: document.getElementById('smtpPass').value,
+          sender: document.getElementById('smtpSender').value,
+          secure: false
+        }
+      }
+    };
+    await updateBackendConfig(payload, 'OTP and SMS/Email settings saved!');
+  }
+
+  async function sendTestOtp(channel) {
+    const recipient = document.getElementById('testOtpRecipient').value.trim();
+    if (!recipient) return alert('Please enter a test phone number or email.');
+    const status = document.getElementById('otpTestStatus');
+    status.innerText = `Dispatching test ${channel}...`;
+
+    const res = await fetch('/api/admin/test-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ channel, recipient })
+    });
+    const data = await res.json();
+    status.innerText = '✓ ' + data.message;
+    showToast(data.message);
+  }
+
+  // ====================================================
+  // PRICING CONFIG
+  // ====================================================
+  async function savePricingConfig() {
+    const payload = {
+      pricing: {
+        starterTitle: document.getElementById('starterTitle').value,
+        starterPrice: Number(document.getElementById('starterPrice').value),
+        starterOriginalPrice: Number(document.getElementById('starterOriginalPrice').value),
+        starterSubtitle: document.getElementById('starterSubtitle').value,
+        starterBadge: 'BEST VALUE',
+        proTitle: document.getElementById('proTitle').value,
+        proPrice: Number(document.getElementById('proPrice').value),
+        proOriginalPrice: Number(document.getElementById('proOriginalPrice').value),
+        proSubtitle: document.getElementById('proSubtitle').value,
+        proBadge: 'MOST POPULAR',
+        freeCallsAllowance: Number(document.getElementById('freeCallsAllowance').value)
+      }
+    };
+    await updateBackendConfig(payload, 'Pricing & calling limits updated in real-time!');
+  }
+
+  // ====================================================
+  // DEMO VIDEO CONFIG
+  // ====================================================
+  function updateDemoPreview() {
+    const url = document.getElementById('demoVideoUrl').value.trim();
+    const container = document.getElementById('demoVideoPreviewContainer');
+    if (!url) {
+      container.innerHTML = 'Enter a YouTube video URL above to preview';
+      return;
+    }
+    let videoId = '';
+    if (url.includes('v=')) {
+      videoId = url.split('v=')[1].split('&')[0];
+    } else if (url.includes('youtu.be/')) {
+      videoId = url.split('youtu.be/')[1].split('?')[0];
+    }
+    if (videoId) {
+      container.innerHTML = `<iframe width="100%" height="280" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
+    } else {
+      container.innerHTML = `Video URL: <a href="${url}" target="_blank" style="color: #FFD600; margin-left: 8px;">${url}</a>`;
+    }
+  }
+
+  async function saveDemoConfig() {
+    const payload = {
+      demoVideo: {
+        url: document.getElementById('demoVideoUrl').value.trim(),
+        title: document.getElementById('demoVideoTitle').value.trim(),
+        description: document.getElementById('demoVideoDesc').value.trim()
+      }
+    };
+    await updateBackendConfig(payload, 'Demo video link and instructions updated!');
+  }
+
+  // ====================================================
+  // HOME BANNERS EDITOR
+  // ====================================================
+  let localBanners = [];
+  function renderBannersEditor(banners) {
+    localBanners = JSON.parse(JSON.stringify(banners));
+    const container = document.getElementById('bannersListContainer');
+    if (!localBanners || localBanners.length === 0) {
+      container.innerHTML = '<div style="text-align: center; padding: 20px;">No banners configured. Click "+ Add New Slide" to create one.</div>';
+      return;
+    }
+
+    container.innerHTML = localBanners.map((b, idx) => `
+      <div style="background: #F8FAFC; border: 1.5px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 18px; position: relative;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div style="font-weight: 800; font-size: 13px;">Banner Slide #${idx + 1}</div>
+          <button class="btn btn-danger" style="padding: 4px 8px; font-size: 11px;" onclick="removeBannerSlide(${idx})">🗑️ Delete</button>
+        </div>
+        <div class="form-grid-3">
+          <div class="form-group">
+            <label class="form-label">Title (Use \\n for newline)</label>
+            <input type="text" class="form-control" value="${escapeHtml(b.title || '')}" oninput="localBanners[${idx}].title = this.value">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Subtitle</label>
+            <input type="text" class="form-control" value="${escapeHtml(b.subtitle || '')}" oninput="localBanners[${idx}].subtitle = this.value">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Badge Text</label>
+            <input type="text" class="form-control" value="${escapeHtml(b.badge || '')}" oninput="localBanners[${idx}].badge = this.value">
+          </div>
+        </div>
+        <div class="form-grid-3">
+          <div class="form-group">
+            <label class="form-label">Custom Image URL (Optional)</label>
+            <input type="text" class="form-control" placeholder="https://..." value="${escapeHtml(b.imageUrl || '')}" oninput="localBanners[${idx}].imageUrl = this.value">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Display Mode</label>
+            <select class="form-control" onchange="localBanners[${idx}].isFullImage = (this.value === 'full')">
+              <option value="standard" ${!b.isFullImage ? 'selected' : ''}>Standard Text & Icon Card</option>
+              <option value="full" ${b.isFullImage ? 'selected' : ''}>Full-Width Image Banner</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Icon Name</label>
+            <input type="text" class="form-control" value="${escapeHtml(b.icon || 'shield-car')}" oninput="localBanners[${idx}].icon = this.value">
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function addNewBannerSlide() {
+    localBanners.push({
+      id: 'b' + (localBanners.length + 1),
+      title: 'New Safety Feature\\nFor Car Owners',
+      subtitle: 'Instant protection with SafeQR smart decaling.',
+      badge: '✨ New Feature',
+      badgeBg: '#DCFCE7',
+      badgeColor: '#15803D',
+      icon: 'shield-check',
+      iconBg: '#FEF9C3',
+      iconColor: '#854D0E',
+      borderColor: '#FEF08A',
+      imageUrl: '',
+      isFullImage: false
+    });
+    renderBannersEditor(localBanners);
+  }
+
+  function removeBannerSlide(idx) {
+    localBanners.splice(idx, 1);
+    renderBannersEditor(localBanners);
+  }
+
+  async function saveBannersConfig() {
+    await updateBackendConfig({ banners: localBanners }, 'Home banners updated and broadcasted to phone!');
+  }
+
+  // ====================================================
+  // ONBOARDING EDITOR
+  // ====================================================
+  let localOnboarding = [];
+  function renderOnboardingEditor(slides) {
+    localOnboarding = JSON.parse(JSON.stringify(slides));
+    const container = document.getElementById('onboardingListContainer');
+
+    container.innerHTML = localOnboarding.map((s, idx) => `
+      <div style="background: #F8FAFC; border: 1.5px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 18px;">
+        <div style="font-weight: 800; font-size: 13px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+          <span>Startup Screen #${idx + 1}</span>
+          <span class="status-badge status-active">Slide ${idx + 1} of ${localOnboarding.length}</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Headline Title</label>
+          <input type="text" class="form-control" value="${escapeHtml(s.title || '')}" oninput="localOnboarding[${idx}].title = this.value">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Subtitle</label>
+          <textarea class="form-control" rows="2" oninput="localOnboarding[${idx}].subtitle = this.value">${escapeHtml(s.subtitle || '')}</textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Hero Image / Illustration URL</label>
+          <input type="text" class="form-control" placeholder="https://..." value="${escapeHtml(s.imageUrl || '')}" oninput="localOnboarding[${idx}].imageUrl = this.value">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Image Mode</label>
+          <select class="form-control" onchange="localOnboarding[${idx}].isFullImage = (this.value === 'full')">
+            <option value="standard" ${!s.isFullImage ? 'selected' : ''}>Standard Illustration + Title</option>
+            <option value="full" ${s.isFullImage ? 'selected' : ''}>Full-Size Hero Banner Image</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Bottom Button Text</label>
+          <input type="text" class="form-control" value="${escapeHtml(s.buttonText || (idx === localOnboarding.length - 1 ? 'Get Started' : 'Next'))}" oninput="localOnboarding[${idx}].buttonText = this.value">
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async function saveOnboardingConfig() {
+    await updateBackendConfig({ onboarding: localOnboarding }, 'Startup onboarding screens updated!');
+  }
+
+  // ====================================================
+  // HELPLINE CONFIG
+  // ====================================================
+  async function saveHelplineConfig() {
+    const payload = {
+      helpline: {
+        tollfree: document.getElementById('helpTollfree').value.trim(),
+        whatsapp: document.getElementById('helpWhatsapp').value.trim(),
+        email: document.getElementById('helpEmail').value.trim(),
+        police: document.getElementById('helpPolice').value.trim(),
+        ambulance: document.getElementById('helpAmbulance').value.trim(),
+        appName: document.getElementById('helpAppName').value.trim(),
+        tagline: document.getElementById('helpTagline').value.trim()
+      }
+    };
+    await updateBackendConfig(payload, 'Helpline and tollfree numbers updated!');
+  }
+
+  // ====================================================
+  // MASTER CONFIG SAVE HELPER
+  // ====================================================
+  async function updateBackendConfig(updates, successMsg) {
+    try {
+      const res = await fetch('/api/admin/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates)
+      });
+      const data = await res.json();
+      if (data.success) {
+        currentConfig = data.config;
+        showToast(successMsg || 'Settings saved and broadcasted to all devices!');
+      } else {
+        alert('Failed to save settings: ' + (data.error || 'Unknown error'));
+      }
+    } catch (err) {
+      alert('Error saving configuration: ' + err.message);
+    }
+  }
+
+  function saveAllActiveConfig() {
+    savePricingConfig();
+    saveHelplineConfig();
+    savePaymentConfig();
+    saveOtpConfig();
+    saveDemoConfig();
+    saveBannersConfig();
+    saveOnboardingConfig();
+    showToast('All system configurations saved and broadcasted!');
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function logoutAdmin() {
+    if (confirm('Sign out from SafeQR Admin Control Center?')) {
+      window.location.reload();
+    }
+  }
+
+  // Boot on DOM Ready
+  document.addEventListener('DOMContentLoaded', () => {
+    loadAllData();
+  });
+</script>
+</body>
+</html>

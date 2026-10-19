@@ -1,0 +1,27 @@
+{
+  "name": "safeqr-backend",
+  "version": "1.0.0",
+  "description": "SafeQR Cloud Relay Server, Fleet Command Center & Incident Dispatch Engine",
+  "main": "relay-server.js",
+  "scripts": {
+    "start": "node relay-server.js",
+    "dev": "node relay-server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
+    "xlsx": "^0.18.5"
+  },
+  "keywords": [
+    "safeqr",
+    "vehicle-safety",
+    "qr-shield",
+    "relay-server"
+  ],
+  "author": "SafeQR Technologies",
+  "license": "ISC"
+}

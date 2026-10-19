@@ -1,0 +1,1528 @@
+{
+  "settings": {
+    "companyIVRRelayNumber": "+919300092225",
+    "ivrMenu": [
+      {
+        "key": "1",
+        "label": "Emergency / Accident SOS",
+        "action": "DISPATCH_SOS"
+      },
+      {
+        "key": "2",
+        "label": "Car Blocked / Move Vehicle",
+        "action": "MOVE_CAR"
+      },
+      {
+        "key": "3",
+        "label": "Safety Hazard (Window/Lights)",
+        "action": "HAZARD"
+      },
+      {
+        "key": "4",
+        "label": "Record Masked Voicemail",
+        "action": "VOICEMAIL"
+      }
+    ],
+    "countryResponders": {
+      "India": {
+        "police": "112",
+        "ambulance": "108",
+        "defaultIVR": "+9118002029900"
+      },
+      "United States": {
+        "police": "911",
+        "ambulance": "911",
+        "defaultIVR": "+18005550199"
+      },
+      "United Kingdom": {
+        "police": "999",
+        "ambulance": "999",
+        "defaultIVR": "+448000188900"
+      },
+      "United Arab Emirates": {
+        "police": "999",
+        "ambulance": "998",
+        "defaultIVR": "+9718007233"
+      },
+      "Canada": {
+        "police": "911",
+        "ambulance": "911",
+        "defaultIVR": "+18005550199"
+      },
+      "Australia": {
+        "police": "000",
+        "ambulance": "000",
+        "defaultIVR": "+611800123456"
+      },
+      "Saudi Arabia": {
+        "police": "999",
+        "ambulance": "997",
+        "defaultIVR": "+966800123456"
+      },
+      "Germany": {
+        "police": "110",
+        "ambulance": "112",
+        "defaultIVR": "+49800123456"
+      }
+    },
+    "adminCredentials": {
+      "username": "admin",
+      "password": "safeqr@2026"
+    }
+  },
+  "vehicles": [
+    {
+      "id": "veh-1792403823898",
+      "orderId": "ORD-2026-7077",
+      "activationKey": "SQR-KEY-6574-91F5",
+      "qrToken": "VID-MP19CA1056",
+      "registrationPlate": "MP-19-CA-1056",
+      "model": "Hyundai Creta Turbo",
+      "vehicleType": "Car",
+      "ownerName": "MohdEzaz",
+      "ownerPhone": "8839786266",
+      "ownerEmail": "mohdezaz@safeqr.in",
+      "address": "Nazerabad satna lane no 6, Satna 485001",
+      "city": "Satna",
+      "state": "Madhya Pradesh",
+      "country": "India",
+      "guardStatus": "GUARD_ACTIVE",
+      "medical": {
+        "bloodGroup": "O+ Positive",
+        "allergies": [
+          "None"
+        ],
+        "insurancePolicyId": "",
+        "emergencyNote": ""
+      },
+      "emergencyContacts": [
+        {
+          "id": "ec-1",
+          "name": "Family Emergency",
+          "relationship": "Family",
+          "phone": "8839786266",
+          "priority": 1,
+          "isVerified": true
+        }
+      ],
+      "emergencyResponders": {
+        "police": "112",
+        "ambulance": "108",
+        "defaultIVR": "+9118002029900"
+      },
+      "createdAt": "10/19/2026, 3:27:03 PM",
+      "paidAmount": 499
+    }
+  ],
+  "orders": [
+    {
+      "id": "ORD-2026-7581",
+      "orderId": "ORD-2026-7581",
+      "vehiclePlate": "MP-19-CA-1056",
+      "ownerName": "MohdEzaz",
+      "ownerEmail": "mohdezaz@safeqr.in",
+      "ownerPhone": "8839786266",
+      "plan": "Pro Dual Holographic Shield (2-Pack)",
+      "amount": 499,
+      "currency": "INR",
+      "status": "PAID",
+      "deliveryStatus": "PROCESSING",
+      "trackingId": "TRK-IN-53469",
+      "activationKey": "SQR-KEY-6574-91F5",
+      "createdAt": "10/19/2026, 3:27:03 PM"
+    }
+  ],
+  "incidents": [
+    {
+      "id": "INC-1792407455301",
+      "vehicleId": "veh-1792403823898",
+      "registrationPlate": "MP-19-CA-1056",
+      "category": "WRONG_PARKING",
+      "message": "Notice: Vehicle parked in unauthorized or restricted parking slot.",
+      "timestamp": "04:27 PM",
+      "status": "DECLINED",
+      "isUrgent": false,
+      "isMuted": false,
+      "responseMessage": "Declined: Vehicle is parked in authorized/allotted parking slot.",
+      "resolvedAt": "04:37 PM"
+    },
+    {
+      "id": "INC-1792407450852",
+      "vehicleId": "veh-1792403823898",
+      "registrationPlate": "MP-19-CA-1056",
+      "category": "HAZARD_DETECTED",
+      "message": "Safety alert: Your car window is open or headlights left on.",
+      "timestamp": "04:27 PM",
+      "status": "RESOLVED",
+      "isUrgent": false,
+      "isMuted": false,
+      "responseMessage": "I'm on my way! Moving vehicle in 2 mins.",
+      "resolvedAt": "04:37 PM"
+    },
+    {
+      "id": "INC-1792407446811",
+      "vehicleId": "veh-1792403823898",
+      "registrationPlate": "MP-19-CA-1056",
+      "category": "AMBULANCE_PATH_BLOCKED",
+      "message": "🚨 CRITICAL: Ambulance / Emergency vehicle blocked! Immediate relocation required!",
+      "timestamp": "04:27 PM",
+      "status": "RESOLVED",
+      "isUrgent": true,
+      "isMuted": false,
+      "responseMessage": "I'm on my way! Moving vehicle in 2 mins.",
+      "resolvedAt": "04:37 PM"
+    },
+    {
+      "id": "INC-1792407393863",
+      "vehicleId": "veh-1792403823898",
+      "registrationPlate": "MP-19-CA-1056",
+      "category": "CAR_BLOCKED",
+      "message": "Your vehicle is obstructing a driveway or blocked another car. Please move it.",
+      "timestamp": "04:26 PM",
+      "status": "RESOLVED",
+      "isUrgent": false,
+      "isMuted": false,
+      "responseMessage": "I'm on my way! Moving vehicle in 2 mins.",
+      "resolvedAt": "04:27 PM"
+    },
+    {
+      "id": "INC-1792405958361",
+      "vehicleId": "veh-1792403823898",
+      "registrationPlate": "MP-19-CA-1056",
+      "category": "WRONG_PARKING",
+      "message": "Notice: Vehicle parked in unauthorized or restricted parking slot.",
+      "timestamp": "04:02 PM",
+      "status": "RESOLVED",
+      "isUrgent": false,
+      "isMuted": false,
+      "responseMessage": "I'm on my way! Moving vehicle in 2 mins.",
+      "resolvedAt": "04:02 PM"
+    },
+    {
+      "id": "INC-1792405956130",
+      "vehicleId": "veh-1792403823898",
+      "registrationPlate": "MP-19-CA-1056",
+      "category": "HAZARD_DETECTED",
+      "message": "Safety alert: Your car window is open or headlights left on.",
+      "timestamp": "04:02 PM",
+      "status": "DECLINED",
+      "isUrgent": false,
+      "isMuted": false,
+      "responseMessage": "Declined: Vehicle is parked in authorized/allotted parking slot.",
+      "resolvedAt": "04:03 PM"
+    },
+    {
+      "id": "INC-1792405945907",
+      "vehicleId": "veh-1792403823898",
+      "registrationPlate": "MP-19-CA-1056",
+      "category": "HAZARD_DETECTED",
+      "message": "Safety alert: Your car window is open or headlights left on.",
+      "timestamp": "04:02 PM",
+      "status": "RESOLVED",
+      "isUrgent": false,
+      "isMuted": false,
+      "responseMessage": "Approved: Thank you for notifying. Vehicle being attended.",
+      "resolvedAt": "04:02 PM"
+    },
+    {
+      "id": "INC-1792405923399",
+      "vehicleId": "veh-1792403823898",
+      "registrationPlate": "MP-19-CA-1056",
+      "category": "CAR_BLOCKED",
+      "message": "Your vehicle is obstructing a driveway or blocked another car. Please move it.",
+      "timestamp": "04:02 PM",
+      "status": "DECLINED",
+      "isUrgent": false,
+      "isMuted": false,
+      "responseMessage": "Declined: Vehicle is not blocking any vehicle.",
+      "resolvedAt": "04:02 PM"
+    },
+    {
+      "id": "INC-1792405909799",
+      "vehicleId": "veh-1792403823898",
+      "registrationPlate": "MP-19-CA-1056",
+      "category": "WRONG_PARKING",
+      "message": "Notice: Vehicle parked in unauthorized or restricted parking slot.",
+      "timestamp": "04:01 PM",
+      "status": "RESOLVED",
+      "isUrgent": false,
+      "isMuted": false,
+      "responseMessage": "Approved: Thank you for notifying. Vehicle being attended.",
+      "resolvedAt": "04:01 PM"
+    },
+    {
+      "id": "INC-1792405791416",
+      "vehicleId": "veh-1792403823898",
+      "registrationPlate": "MP-19-CA-1056",
+      "category": "SOS_ACCIDENT",
+      "message": "🆘 ACCIDENT EMERGENCY: Bystander triggered accident alert. Family contacts notified!",
+      "timestamp": "03:59 PM",
+      "status": "DECLINED",
+      "isUrgent": true,
+      "isMuted": false,
+      "responseMessage": "Declined: Vehicle is parked in authorized/allotted parking slot.",
+      "resolvedAt": "04:01 PM"
+    },
+    {
+      "id": "INC-1792405786974",
+      "vehicleId": "veh-1792403823898",
+      "registrationPlate": "MP-19-CA-1056",
+      "category": "AMBULANCE_PATH_BLOCKED",
+      "message": "🚨 CRITICAL: Ambulance / Emergency vehicle blocked! Immediate relocation required!",
+      "timestamp": "03:59 PM",
+      "status": "DECLINED",
+      "isUrgent": true,
+      "isMuted": false,
+      "responseMessage": "Declined: Vehicle is parked in authorized/allotted parking slot.",
+      "resolvedAt": "04:01 PM"
+    },
+    {
+      "id": "INC-1792405776671",
+      "vehicleId": "veh-1792403823898",
+      "registrationPlate": "MP-19-CA-1056",
+      "category": "CAR_BLOCKED",
+      "message": "Your vehicle is obstructing a driveway or blocked another car. Please move it.",
+      "timestamp": "03:59 PM",
+      "status": "DECLINED",
+      "isUrgent": false,
+      "isMuted": false,
+      "responseMessage": "Declined: Vehicle is parked in authorized/allotted parking slot.",
+      "resolvedAt": "04:01 PM"
+    },
+    {
+      "id": "INC-1792404355398",
+      "vehicleId": "veh-1792403823898",
+      "registrationPlate": "MP-19-CA-1056",
+      "category": "CAR_BLOCKED",
+      "message": "Car blocked gate 2 entrance. Please move immediately.",
+      "timestamp": "03:35 PM",
+      "status": "RESOLVED",
+      "isUrgent": true,
+      "isMuted": false,
+      "responseMessage": "I'm on my way! Moving vehicle in 2 mins.",
+      "resolvedAt": "03:39 PM"
+    },
+    {
+      "id": "INC-1792311060719",
+      "vehicleId": "veh-1792309996105",
+      "registrationPlate": "MP 12 AE 8685",
+      "category": "AMBULANCE_PATH_BLOCKED",
+      "message": "🚨 CRITICAL: Ambulance / Emergency vehicle blocked! Immediate relocation required!",
+      "timestamp": "01:41 PM",
+      "status": "PENDING",
+      "isUrgent": true,
+      "isMuted": false,
+      "responseMessage": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "INC-1792311049558",
+      "vehicleId": "veh-1792309996105",
+      "registrationPlate": "MP 12 AE 8685",
+      "category": "CAR_BLOCKED",
+      "message": "Your vehicle is obstructing a driveway or blocked another car. Please move it.",
+      "timestamp": "01:40 PM",
+      "status": "PENDING",
+      "isUrgent": false,
+      "isMuted": false,
+      "responseMessage": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "INC-1792310979100",
+      "vehicleId": "veh-1792227326438",
+      "registrationPlate": "DL01AB1234",
+      "category": "AMBULANCE_PATH_BLOCKED",
+      "message": "🚨 CRITICAL: Ambulance / Emergency vehicle blocked! Immediate relocation required!",
+      "timestamp": "01:39 PM",
+      "status": "PENDING",
+      "isUrgent": true,
+      "isMuted": true,
+      "responseMessage": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "INC-1792310967550",
+      "vehicleId": "veh-1792227326438",
+      "registrationPlate": "DL01AB1234",
+      "category": "CAR_BLOCKED",
+      "message": "Your vehicle is obstructing a driveway or blocked another car. Please move it.",
+      "timestamp": "01:39 PM",
+      "status": "PENDING",
+      "isUrgent": false,
+      "isMuted": false,
+      "responseMessage": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "inc-test-2",
+      "vehicleId": "veh-bbb",
+      "registrationPlate": "UP-16-BB-2222",
+      "category": "HAZARD_DETECTED",
+      "timestamp": "10:05 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "inc-test-1",
+      "vehicleId": "veh-aaa",
+      "registrationPlate": "MH-12-AA-1111",
+      "category": "CAR_BLOCKED",
+      "timestamp": "10:00 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "inc-test-2",
+      "vehicleId": "veh-bbb",
+      "registrationPlate": "UP-16-BB-2222",
+      "category": "HAZARD_DETECTED",
+      "timestamp": "10:05 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "inc-test-1",
+      "vehicleId": "veh-aaa",
+      "registrationPlate": "MH-12-AA-1111",
+      "category": "CAR_BLOCKED",
+      "timestamp": "10:00 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "INC-1792235326984",
+      "vehicleId": "veh-1792227326438",
+      "registrationPlate": "DL01AB1234",
+      "category": "HAZARD_DETECTED",
+      "message": "Safety alert: Your car window is open or headlights left on.",
+      "timestamp": "04:38 PM",
+      "status": "PENDING",
+      "isUrgent": false,
+      "isMuted": false,
+      "responseMessage": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "INC-1792234794771",
+      "vehicleId": "veh-9900",
+      "registrationPlate": "MH-12-DE-9900",
+      "category": "SOS_ACCIDENT",
+      "message": "🆘 ACCIDENT EMERGENCY: Bystander triggered accident alert. Family contacts notified!",
+      "timestamp": "04:29 PM",
+      "status": "PENDING",
+      "isUrgent": true,
+      "isMuted": false,
+      "responseMessage": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "INC-1792234791788",
+      "vehicleId": "veh-9900",
+      "registrationPlate": "MH-12-DE-9900",
+      "category": "CAR_BLOCKED",
+      "message": "Your vehicle is obstructing a driveway or blocked another car. Please move it.",
+      "timestamp": "04:29 PM",
+      "status": "PENDING",
+      "isUrgent": false,
+      "isMuted": false,
+      "responseMessage": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "INC-1792234760087",
+      "vehicleId": "veh-1792227326438",
+      "registrationPlate": "DL01AB1234",
+      "category": "SOS_ACCIDENT",
+      "message": "🆘 ACCIDENT EMERGENCY: Bystander triggered accident alert. Family contacts notified!",
+      "timestamp": "04:29 PM",
+      "status": "PENDING",
+      "isUrgent": true,
+      "isMuted": false,
+      "responseMessage": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "INC-1792234759246",
+      "vehicleId": "veh-1792227326438",
+      "registrationPlate": "DL01AB1234",
+      "category": "WRONG_PARKING",
+      "message": "Notice: Vehicle parked in unauthorized or restricted parking slot.",
+      "timestamp": "04:29 PM",
+      "status": "PENDING",
+      "isUrgent": false,
+      "isMuted": false,
+      "responseMessage": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "INC-1792234758472",
+      "vehicleId": "veh-1792227326438",
+      "registrationPlate": "DL01AB1234",
+      "category": "HAZARD_DETECTED",
+      "message": "Safety alert: Your car window is open or headlights left on.",
+      "timestamp": "04:29 PM",
+      "status": "PENDING",
+      "isUrgent": false,
+      "isMuted": false,
+      "responseMessage": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "INC-1792234755900",
+      "vehicleId": "veh-1792227326438",
+      "registrationPlate": "DL01AB1234",
+      "category": "AMBULANCE_PATH_BLOCKED",
+      "message": "🚨 CRITICAL: Ambulance / Emergency vehicle blocked! Immediate relocation required!",
+      "timestamp": "04:29 PM",
+      "status": "PENDING",
+      "isUrgent": true,
+      "isMuted": false,
+      "responseMessage": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "INC-1792234753978",
+      "vehicleId": "veh-1792227326438",
+      "registrationPlate": "DL01AB1234",
+      "category": "CAR_BLOCKED",
+      "message": "Your vehicle is obstructing a driveway or blocked another car. Please move it.",
+      "timestamp": "04:29 PM",
+      "status": "PENDING",
+      "isUrgent": false,
+      "isMuted": false,
+      "responseMessage": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "inc-test-2",
+      "vehicleId": "veh-bbb",
+      "registrationPlate": "UP-16-BB-2222",
+      "category": "HAZARD_DETECTED",
+      "timestamp": "10:05 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "inc-test-1",
+      "vehicleId": "veh-aaa",
+      "registrationPlate": "MH-12-AA-1111",
+      "category": "CAR_BLOCKED",
+      "timestamp": "10:00 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "inc-test-2",
+      "vehicleId": "veh-bbb",
+      "registrationPlate": "UP-16-BB-2222",
+      "category": "HAZARD_DETECTED",
+      "timestamp": "10:05 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "inc-test-1",
+      "vehicleId": "veh-aaa",
+      "registrationPlate": "MH-12-AA-1111",
+      "category": "CAR_BLOCKED",
+      "timestamp": "10:00 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "inc-test-2",
+      "vehicleId": "veh-bbb",
+      "registrationPlate": "UP-16-BB-2222",
+      "category": "HAZARD_DETECTED",
+      "timestamp": "10:05 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "inc-test-1",
+      "vehicleId": "veh-aaa",
+      "registrationPlate": "MH-12-AA-1111",
+      "category": "CAR_BLOCKED",
+      "timestamp": "10:00 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "inc-test-2",
+      "vehicleId": "veh-bbb",
+      "registrationPlate": "UP-16-BB-2222",
+      "category": "HAZARD_DETECTED",
+      "timestamp": "10:05 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "inc-test-1",
+      "vehicleId": "veh-aaa",
+      "registrationPlate": "MH-12-AA-1111",
+      "category": "CAR_BLOCKED",
+      "timestamp": "10:00 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "INC-1792226136261",
+      "vehicleId": "veh-9900",
+      "registrationPlate": "veh-9900",
+      "category": "AMBULANCE_PATH_BLOCKED",
+      "message": "🚨 CRITICAL: Ambulance / Emergency vehicle blocked! Immediate relocation required!",
+      "timestamp": "02:05 PM",
+      "status": "PENDING",
+      "isUrgent": true,
+      "isMuted": false,
+      "responseMessage": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "inc-test-2",
+      "vehicleId": "veh-bbb",
+      "registrationPlate": "UP-16-BB-2222",
+      "category": "HAZARD_DETECTED",
+      "timestamp": "10:05 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "inc-test-1",
+      "vehicleId": "veh-aaa",
+      "registrationPlate": "MH-12-AA-1111",
+      "category": "CAR_BLOCKED",
+      "timestamp": "10:00 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "inc-test-2",
+      "vehicleId": "veh-bbb",
+      "registrationPlate": "UP-16-BB-2222",
+      "category": "HAZARD_DETECTED",
+      "timestamp": "10:05 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "inc-test-1",
+      "vehicleId": "veh-aaa",
+      "registrationPlate": "MH-12-AA-1111",
+      "category": "CAR_BLOCKED",
+      "timestamp": "10:00 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "inc-test-2",
+      "vehicleId": "veh-bbb",
+      "registrationPlate": "UP-16-BB-2222",
+      "category": "HAZARD_DETECTED",
+      "timestamp": "10:05 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "inc-test-1",
+      "vehicleId": "veh-aaa",
+      "registrationPlate": "MH-12-AA-1111",
+      "category": "CAR_BLOCKED",
+      "timestamp": "10:00 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "INC-1791736224118",
+      "vehicleId": "veh-9900",
+      "registrationPlate": "MH-12-DE-9900",
+      "category": "SOS_ACCIDENT",
+      "message": "🆘 ACCIDENT EMERGENCY: Bystander triggered accident alert. Family contacts notified!",
+      "timestamp": "10:00 PM",
+      "status": "ACKNOWLEDGED",
+      "isUrgent": true,
+      "isMuted": false,
+      "responseMessage": "Alert acknowledged by vehicle owner.",
+      "resolvedAt": "10:00 PM"
+    },
+    {
+      "id": "INC-1791736221557",
+      "vehicleId": "veh-9900",
+      "registrationPlate": "MH-12-DE-9900",
+      "category": "HAZARD_DETECTED",
+      "message": "Safety alert: Your car window is open or headlights left on.",
+      "timestamp": "10:00 PM",
+      "status": "PENDING",
+      "isUrgent": false,
+      "isMuted": false,
+      "responseMessage": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "INC-1791736218643",
+      "vehicleId": "veh-9900",
+      "registrationPlate": "MH-12-DE-9900",
+      "category": "WRONG_PARKING",
+      "message": "Notice: Vehicle parked in unauthorized or restricted parking slot.",
+      "timestamp": "10:00 PM",
+      "status": "PENDING",
+      "isUrgent": false,
+      "isMuted": false,
+      "responseMessage": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "INC-1791736211317",
+      "vehicleId": "veh-9900",
+      "registrationPlate": "MH-12-DE-9900",
+      "category": "HAZARD_DETECTED",
+      "message": "Safety alert: Your car window is open or headlights left on.",
+      "timestamp": "10:00 PM",
+      "status": "ACKNOWLEDGED",
+      "isUrgent": false,
+      "isMuted": false,
+      "responseMessage": "Alert acknowledged by vehicle owner.",
+      "resolvedAt": "10:00 PM"
+    },
+    {
+      "id": "INC-1791736205993",
+      "vehicleId": "veh-9900",
+      "registrationPlate": "MH-12-DE-9900",
+      "category": "SOS_ACCIDENT",
+      "message": "🆘 ACCIDENT EMERGENCY: Bystander triggered accident alert. Family contacts notified!",
+      "timestamp": "10:00 PM",
+      "status": "ACKNOWLEDGED",
+      "isUrgent": true,
+      "isMuted": false,
+      "responseMessage": "Alert acknowledged by vehicle owner.",
+      "resolvedAt": "10:00 PM"
+    },
+    {
+      "id": "INC-1791736193296",
+      "vehicleId": "veh-9900",
+      "registrationPlate": "MH-12-DE-9900",
+      "category": "AMBULANCE_PATH_BLOCKED",
+      "message": "🚨 CRITICAL: Ambulance / Emergency vehicle blocked! Immediate relocation required!",
+      "timestamp": "09:59 PM",
+      "status": "ACKNOWLEDGED",
+      "isUrgent": true,
+      "isMuted": true,
+      "responseMessage": "Alert acknowledged by vehicle owner.",
+      "resolvedAt": "09:59 PM"
+    },
+    {
+      "id": "INC-1791736192582",
+      "vehicleId": "veh-9900",
+      "registrationPlate": "MH-12-DE-9900",
+      "category": "CAR_BLOCKED",
+      "message": "Your vehicle is obstructing a driveway or blocked another car. Please move it.",
+      "timestamp": "09:59 PM",
+      "status": "PENDING",
+      "isUrgent": false,
+      "isMuted": true,
+      "responseMessage": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "INC-1791736191254",
+      "vehicleId": "veh-9900",
+      "registrationPlate": "MH-12-DE-9900",
+      "category": "CAR_BLOCKED",
+      "message": "Your vehicle is obstructing a driveway or blocked another car. Please move it.",
+      "timestamp": "09:59 PM",
+      "status": "PENDING",
+      "isUrgent": false,
+      "isMuted": true,
+      "responseMessage": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "INC-1791736190398",
+      "vehicleId": "veh-9900",
+      "registrationPlate": "MH-12-DE-9900",
+      "category": "CAR_BLOCKED",
+      "message": "Your vehicle is obstructing a driveway or blocked another car. Please move it.",
+      "timestamp": "09:59 PM",
+      "status": "PENDING",
+      "isUrgent": false,
+      "isMuted": true,
+      "responseMessage": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "INC-1791736189487",
+      "vehicleId": "veh-9900",
+      "registrationPlate": "MH-12-DE-9900",
+      "category": "HAZARD_DETECTED",
+      "message": "Safety alert: Your car window is open or headlights left on.",
+      "timestamp": "09:59 PM",
+      "status": "PENDING",
+      "isUrgent": false,
+      "isMuted": true,
+      "responseMessage": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "INC-1791736155204",
+      "vehicleId": "veh-9900",
+      "registrationPlate": "MH-12-DE-9900",
+      "category": "CAR_BLOCKED",
+      "message": "Your vehicle is obstructing a driveway or blocked another car. Please move it.",
+      "timestamp": "09:59 PM",
+      "status": "RESOLVED",
+      "isUrgent": false,
+      "isMuted": false,
+      "responseMessage": "I'm moving my car right now! Please give me 2 minutes.",
+      "resolvedAt": "09:59 PM"
+    },
+    {
+      "id": "inc-test-2",
+      "vehicleId": "veh-bbb",
+      "registrationPlate": "UP-16-BB-2222",
+      "category": "HAZARD_DETECTED",
+      "timestamp": "10:05 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "inc-test-1",
+      "vehicleId": "veh-aaa",
+      "registrationPlate": "MH-12-AA-1111",
+      "category": "CAR_BLOCKED",
+      "timestamp": "10:00 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "inc-test-2",
+      "vehicleId": "veh-bbb",
+      "registrationPlate": "UP-16-BB-2222",
+      "category": "HAZARD_DETECTED",
+      "timestamp": "10:05 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "inc-test-1",
+      "vehicleId": "veh-aaa",
+      "registrationPlate": "MH-12-AA-1111",
+      "category": "CAR_BLOCKED",
+      "timestamp": "10:00 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "inc-test-2",
+      "vehicleId": "veh-bbb",
+      "registrationPlate": "UP-16-BB-2222",
+      "category": "HAZARD_DETECTED",
+      "timestamp": "10:05 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "inc-test-1",
+      "vehicleId": "veh-aaa",
+      "registrationPlate": "MH-12-AA-1111",
+      "category": "CAR_BLOCKED",
+      "timestamp": "10:00 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "inc-test-2",
+      "vehicleId": "veh-bbb",
+      "registrationPlate": "UP-16-BB-2222",
+      "category": "HAZARD_DETECTED",
+      "timestamp": "10:05 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "inc-test-1",
+      "vehicleId": "veh-aaa",
+      "registrationPlate": "MH-12-AA-1111",
+      "category": "CAR_BLOCKED",
+      "timestamp": "10:00 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "INC-1791734055122",
+      "vehicleId": "veh-9900",
+      "registrationPlate": "MH-12-DE-9900",
+      "category": "SOS_ACCIDENT",
+      "message": "🆘 ACCIDENT EMERGENCY: Bystander triggered accident alert. Family contacts notified!",
+      "timestamp": "09:24 PM",
+      "status": "ACKNOWLEDGED",
+      "isUrgent": true,
+      "responseMessage": "Alert acknowledged by vehicle owner.",
+      "resolvedAt": "09:58 PM"
+    },
+    {
+      "id": "INC-1791734046224",
+      "vehicleId": "veh-9900",
+      "registrationPlate": "MH-12-DE-9900",
+      "category": "WRONG_PARKING",
+      "message": "Notice: Vehicle parked in unauthorized or restricted parking slot.",
+      "timestamp": "09:24 PM",
+      "status": "ACKNOWLEDGED",
+      "isUrgent": false,
+      "responseMessage": "Alert acknowledged by vehicle owner.",
+      "resolvedAt": "09:24 PM"
+    },
+    {
+      "id": "INC-1791734042181",
+      "vehicleId": "veh-9900",
+      "registrationPlate": "MH-12-DE-9900",
+      "category": "HAZARD_DETECTED",
+      "message": "Safety alert: Your car window is open or headlights left on.",
+      "timestamp": "09:24 PM",
+      "status": "ACKNOWLEDGED",
+      "isUrgent": false,
+      "responseMessage": "Alert acknowledged by vehicle owner.",
+      "resolvedAt": "09:24 PM"
+    },
+    {
+      "id": "INC-1791734039580",
+      "vehicleId": "veh-9900",
+      "registrationPlate": "MH-12-DE-9900",
+      "category": "AMBULANCE_PATH_BLOCKED",
+      "message": "🚨 CRITICAL: Ambulance / Emergency vehicle blocked! Immediate relocation required!",
+      "timestamp": "09:23 PM",
+      "status": "ACKNOWLEDGED",
+      "isUrgent": true,
+      "responseMessage": "Alert acknowledged by vehicle owner.",
+      "resolvedAt": "09:24 PM"
+    },
+    {
+      "id": "INC-1791734035960",
+      "vehicleId": "veh-9900",
+      "registrationPlate": "MH-12-DE-9900",
+      "category": "CAR_BLOCKED",
+      "message": "Your vehicle is obstructing a driveway or blocked another car. Please move it.",
+      "timestamp": "09:23 PM",
+      "status": "ACKNOWLEDGED",
+      "isUrgent": false,
+      "responseMessage": "Alert acknowledged by vehicle owner.",
+      "resolvedAt": "09:23 PM"
+    },
+    {
+      "id": "INC-1791734023099",
+      "vehicleId": "veh-1791731655935",
+      "registrationPlate": "UP-01-AB-5421",
+      "category": "CAR_BLOCKED",
+      "message": "Your vehicle is obstructing a driveway or blocked another car. Please move it.",
+      "timestamp": "09:23 PM",
+      "status": "PENDING",
+      "isUrgent": false,
+      "responseMessage": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "INC-1791734021321",
+      "vehicleId": "veh-1791731655935",
+      "registrationPlate": "UP-01-AB-5421",
+      "category": "CAR_BLOCKED",
+      "message": "Your vehicle is obstructing a driveway or blocked another car. Please move it.",
+      "timestamp": "09:23 PM",
+      "status": "PENDING",
+      "isUrgent": false,
+      "responseMessage": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "INC-1791734017438",
+      "vehicleId": "veh-1791731655935",
+      "registrationPlate": "UP-01-AB-5421",
+      "category": "CAR_BLOCKED",
+      "message": "Your vehicle is obstructing a driveway or blocked another car. Please move it.",
+      "timestamp": "09:23 PM",
+      "status": "PENDING",
+      "isUrgent": false,
+      "responseMessage": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "INC-1791733922461",
+      "vehicleId": "veh-1791730713565",
+      "registrationPlate": "UP-16-AB-9876",
+      "category": "CAR_BLOCKED",
+      "message": "Your vehicle is obstructing a driveway or blocked another car. Please move it.",
+      "timestamp": "09:22 PM",
+      "status": "ACKNOWLEDGED",
+      "isUrgent": false,
+      "responseMessage": "Alert acknowledged by vehicle owner.",
+      "resolvedAt": "09:22 PM"
+    },
+    {
+      "id": "INC-1791733918826",
+      "vehicleId": "veh-1791730713565",
+      "registrationPlate": "UP-16-AB-9876",
+      "category": "AMBULANCE_PATH_BLOCKED",
+      "message": "🚨 CRITICAL: Ambulance / Emergency vehicle blocked! Immediate relocation required!",
+      "timestamp": "09:21 PM",
+      "status": "PENDING",
+      "isUrgent": true,
+      "responseMessage": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "INC-1791733915166",
+      "vehicleId": "veh-1791730713565",
+      "registrationPlate": "UP-16-AB-9876",
+      "category": "CAR_BLOCKED",
+      "message": "Your vehicle is obstructing a driveway or blocked another car. Please move it.",
+      "timestamp": "09:21 PM",
+      "status": "ACKNOWLEDGED",
+      "isUrgent": false,
+      "responseMessage": "Alert acknowledged by vehicle owner.",
+      "resolvedAt": "09:21 PM"
+    },
+    {
+      "id": "INC-1791733877826",
+      "vehicleId": "veh-1791730713565",
+      "registrationPlate": "UP-16-AB-9876",
+      "category": "SOS_ACCIDENT",
+      "message": "🆘 ACCIDENT EMERGENCY: Bystander triggered accident alert. Family contacts notified!",
+      "timestamp": "09:21 PM",
+      "status": "ACKNOWLEDGED",
+      "isUrgent": true,
+      "responseMessage": "Alert acknowledged by vehicle owner.",
+      "resolvedAt": "09:21 PM"
+    },
+    {
+      "id": "INC-1791733867349",
+      "vehicleId": "veh-1791730713565",
+      "registrationPlate": "UP-16-AB-9876",
+      "category": "HAZARD_DETECTED",
+      "message": "Safety alert: Your car window is open or headlights left on.",
+      "timestamp": "09:21 PM",
+      "status": "ACKNOWLEDGED",
+      "isUrgent": false,
+      "responseMessage": "Alert acknowledged by vehicle owner.",
+      "resolvedAt": "09:21 PM"
+    },
+    {
+      "id": "INC-1791733863762",
+      "vehicleId": "veh-1791730713565",
+      "registrationPlate": "UP-16-AB-9876",
+      "category": "WRONG_PARKING",
+      "message": "Notice: Vehicle parked in unauthorized or restricted parking slot.",
+      "timestamp": "09:21 PM",
+      "status": "PENDING",
+      "isUrgent": false,
+      "responseMessage": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "INC-1791733857464",
+      "vehicleId": "veh-1791730713565",
+      "registrationPlate": "UP-16-AB-9876",
+      "category": "WRONG_PARKING",
+      "message": "Notice: Vehicle parked in unauthorized or restricted parking slot.",
+      "timestamp": "09:20 PM",
+      "status": "RESOLVED",
+      "isUrgent": false,
+      "responseMessage": "I'm moving my car right now! Please give me 2 minutes.",
+      "resolvedAt": "09:21 PM"
+    },
+    {
+      "id": "INC-1791733843454",
+      "vehicleId": "veh-1791730713565",
+      "registrationPlate": "UP-16-AB-9876",
+      "category": "SOS_ACCIDENT",
+      "message": "🆘 ACCIDENT EMERGENCY: Bystander triggered accident alert. Family contacts notified!",
+      "timestamp": "09:20 PM",
+      "status": "RESOLVED",
+      "isUrgent": true,
+      "responseMessage": "I'm moving my car right now! Please give me 2 minutes.",
+      "resolvedAt": "09:20 PM"
+    },
+    {
+      "id": "INC-1791733828729",
+      "vehicleId": "veh-1791730713565",
+      "registrationPlate": "UP-16-AB-9876",
+      "category": "CAR_BLOCKED",
+      "message": "Your vehicle is obstructing a driveway or blocked another car. Please move it.",
+      "timestamp": "09:20 PM",
+      "status": "RESOLVED",
+      "isUrgent": false,
+      "responseMessage": "I'm moving my car right now! Please give me 2 minutes.",
+      "resolvedAt": "09:20 PM"
+    },
+    {
+      "id": "INC-1791733706741",
+      "vehicleId": "veh-1791731655935",
+      "registrationPlate": "UP-01-AB-5421",
+      "category": "CAR_BLOCKED",
+      "message": "Your vehicle is obstructing a driveway or blocked another car. Please move it.",
+      "timestamp": "09:18 PM",
+      "status": "PENDING",
+      "isUrgent": false,
+      "responseMessage": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "INC-1791733701191",
+      "vehicleId": "veh-1791730713565",
+      "registrationPlate": "UP-16-AB-9876",
+      "category": "CAR_BLOCKED",
+      "message": "Your vehicle is obstructing a driveway or blocked another car. Please move it.",
+      "timestamp": "09:18 PM",
+      "status": "ACKNOWLEDGED",
+      "isUrgent": false,
+      "responseMessage": "Alert acknowledged by vehicle owner.",
+      "resolvedAt": "09:20 PM"
+    },
+    {
+      "id": "INC-1791733618276",
+      "vehicleId": "veh-1791731655935",
+      "registrationPlate": "UP-01-AB-5421",
+      "category": "CAR_BLOCKED",
+      "message": "Your vehicle is obstructing a driveway or blocked another car. Please move it.",
+      "timestamp": "09:16 PM",
+      "status": "PENDING",
+      "isUrgent": false,
+      "responseMessage": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "inc-test-2",
+      "vehicleId": "veh-bbb",
+      "registrationPlate": "UP-16-BB-2222",
+      "category": "HAZARD_DETECTED",
+      "timestamp": "10:05 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "inc-test-1",
+      "vehicleId": "veh-aaa",
+      "registrationPlate": "MH-12-AA-1111",
+      "category": "CAR_BLOCKED",
+      "timestamp": "10:00 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "INC-1791733248391",
+      "vehicleId": "veh-9900",
+      "registrationPlate": "MH-12-DE-9900",
+      "category": "CAR_BLOCKED",
+      "message": "Your vehicle is obstructing a driveway or blocked another car. Please move it.",
+      "timestamp": "09:10 PM",
+      "status": "ACKNOWLEDGED",
+      "isUrgent": false,
+      "responseMessage": "Alert acknowledged by vehicle owner.",
+      "resolvedAt": "09:23 PM"
+    },
+    {
+      "id": "inc-test-2",
+      "vehicleId": "veh-bbb",
+      "registrationPlate": "UP-16-BB-2222",
+      "category": "HAZARD_DETECTED",
+      "timestamp": "10:05 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "inc-test-1",
+      "vehicleId": "veh-aaa",
+      "registrationPlate": "MH-12-AA-1111",
+      "category": "CAR_BLOCKED",
+      "timestamp": "10:00 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "inc-test-2",
+      "vehicleId": "veh-bbb",
+      "registrationPlate": "UP-16-BB-2222",
+      "category": "HAZARD_DETECTED",
+      "timestamp": "10:05 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "inc-test-1",
+      "vehicleId": "veh-aaa",
+      "registrationPlate": "MH-12-AA-1111",
+      "category": "CAR_BLOCKED",
+      "timestamp": "10:00 AM",
+      "status": "PENDING"
+    },
+    {
+      "id": "INC-1791732877639",
+      "vehicleId": "veh-1791731655935",
+      "registrationPlate": "UP-01-AB-5421",
+      "category": "SOS_ACCIDENT",
+      "message": "🆘 ACCIDENT EMERGENCY: Bystander triggered accident alert. Family contacts notified!",
+      "timestamp": "09:04 PM",
+      "status": "PENDING",
+      "isUrgent": true,
+      "responseMessage": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "INC-1791732846946",
+      "vehicleId": "veh-1791731655935",
+      "registrationPlate": "UP-01-AB-5421",
+      "category": "AMBULANCE_PATH_BLOCKED",
+      "message": "🚨 CRITICAL: Ambulance / Emergency vehicle blocked! Immediate relocation required!",
+      "timestamp": "09:04 PM",
+      "status": "ACKNOWLEDGED",
+      "isUrgent": true,
+      "responseMessage": "Alert acknowledged by vehicle owner.",
+      "resolvedAt": "09:04 PM"
+    },
+    {
+      "id": "INC-1791732820729",
+      "vehicleId": "veh-1791731655935",
+      "registrationPlate": "UP-01-AB-5421",
+      "category": "CAR_BLOCKED",
+      "message": "Your vehicle is obstructing a driveway or blocked another car. Please move it.",
+      "timestamp": "09:03 PM",
+      "status": "RESOLVED",
+      "isUrgent": false,
+      "responseMessage": "I'm moving my car right now! Please give me 2 minutes.",
+      "resolvedAt": "09:03 PM"
+    },
+    {
+      "id": "INC-1791732062302",
+      "vehicleId": "veh-1791731655935",
+      "registrationPlate": "UP-01-AB-5421",
+      "category": "AMBULANCE_PATH_BLOCKED",
+      "message": "🚨 CRITICAL: Ambulance / Emergency vehicle blocked! Immediate relocation required!",
+      "timestamp": "08:51 PM",
+      "status": "RESOLVED",
+      "isUrgent": true,
+      "responseMessage": "I'm moving my car right now! Please give me 2 minutes.",
+      "resolvedAt": "08:51 PM"
+    },
+    {
+      "id": "INC-1791732048288",
+      "vehicleId": "veh-1791731655935",
+      "registrationPlate": "UP-01-AB-5421",
+      "category": "CAR_BLOCKED",
+      "message": "Your vehicle is obstructing a driveway or blocked another car. Please move it.",
+      "timestamp": "08:50 PM",
+      "status": "ACKNOWLEDGED",
+      "isUrgent": false,
+      "responseMessage": "Alert acknowledged by vehicle owner.",
+      "resolvedAt": "08:50 PM"
+    },
+    {
+      "id": "INC-1791731879840",
+      "vehicleId": "veh-1791730713565",
+      "registrationPlate": "UP-16-AB-9876",
+      "category": "CAR_BLOCKED",
+      "message": "Your vehicle is obstructing a driveway or blocked another car. Please move it.",
+      "timestamp": "08:47 PM",
+      "status": "PENDING",
+      "isUrgent": false,
+      "responseMessage": null,
+      "resolvedAt": null
+    },
+    {
+      "id": "INC-1791731727842",
+      "vehicleId": "veh-1791731655935",
+      "registrationPlate": "UP-01-AB-5421",
+      "category": "AMBULANCE_PATH_BLOCKED",
+      "message": "🚨 CRITICAL: Ambulance / Emergency vehicle blocked! Immediate relocation required!",
+      "timestamp": "08:45 PM",
+      "status": "RESOLVED",
+      "isUrgent": true,
+      "responseMessage": "I'm moving my car right now! Please give me 2 minutes.",
+      "resolvedAt": "08:45 PM"
+    },
+    {
+      "id": "INC-1791731720758",
+      "vehicleId": "veh-1791731655935",
+      "registrationPlate": "UP-01-AB-5421",
+      "category": "HAZARD_DETECTED",
+      "message": "Safety alert: Your car window is open or headlights left on.",
+      "timestamp": "08:45 PM",
+      "status": "ACKNOWLEDGED",
+      "isUrgent": false,
+      "responseMessage": "Alert acknowledged by vehicle owner.",
+      "resolvedAt": "08:45 PM"
+    },
+    {
+      "id": "INC-1791731703718",
+      "vehicleId": "veh-1791731655935",
+      "registrationPlate": "UP-01-AB-5421",
+      "category": "SOS_ACCIDENT",
+      "message": "🆘 ACCIDENT EMERGENCY: Bystander triggered accident alert. Family contacts notified!",
+      "timestamp": "08:45 PM",
+      "status": "ACKNOWLEDGED",
+      "isUrgent": true,
+      "responseMessage": "Alert acknowledged by vehicle owner.",
+      "resolvedAt": "08:45 PM"
+    },
+    {
+      "id": "INC-1791731388087",
+      "vehicleId": "veh-1791730713565",
+      "registrationPlate": "UP-16-AB-9876",
+      "category": "CAR_BLOCKED",
+      "message": "Your vehicle is obstructing a driveway or blocked another car. Please move it.",
+      "timestamp": "08:39 PM",
+      "status": "ACKNOWLEDGED",
+      "isUrgent": false,
+      "responseMessage": "Alert acknowledged by vehicle owner.",
+      "resolvedAt": "08:39 PM"
+    },
+    {
+      "id": "INC-1791731360330",
+      "vehicleId": "veh-1791730713565",
+      "registrationPlate": "UP-16-AB-9876",
+      "category": "CAR_BLOCKED",
+      "message": "Your vehicle is obstructing a driveway or blocked another car. Please move it.",
+      "timestamp": "08:39 PM",
+      "status": "ACKNOWLEDGED",
+      "isUrgent": false,
+      "responseMessage": "Alert acknowledged by vehicle owner.",
+      "resolvedAt": "08:39 PM"
+    },
+    {
+      "id": "INC-1791731270166",
+      "vehicleId": "veh-1791730713565",
+      "registrationPlate": "UP-16-AB-9999",
+      "category": "SOS_ACCIDENT",
+      "message": "🆘 ACCIDENT EMERGENCY: Bystander triggered accident alert. Family contacts notified!",
+      "timestamp": "08:37 PM",
+      "status": "ACKNOWLEDGED",
+      "isUrgent": true,
+      "responseMessage": "Alert acknowledged by vehicle owner.",
+      "resolvedAt": "08:38 PM"
+    },
+    {
+      "id": "INC-1791731234577",
+      "vehicleId": "veh-1791730713565",
+      "registrationPlate": "UP-16-AB-9999",
+      "category": "SOS_ACCIDENT",
+      "message": "🆘 ACCIDENT EMERGENCY: Bystander triggered accident alert. Family contacts notified!",
+      "timestamp": "08:37 PM",
+      "status": "ACKNOWLEDGED",
+      "isUrgent": true,
+      "responseMessage": "Alert acknowledged by vehicle owner.",
+      "resolvedAt": "08:37 PM"
+    },
+    {
+      "id": "INC-1791731220294",
+      "vehicleId": "veh-1791730713565",
+      "registrationPlate": "UP-16-AB-9999",
+      "category": "CAR_BLOCKED",
+      "message": "Your vehicle is obstructing a driveway or blocked another car. Please move it.",
+      "timestamp": "08:37 PM",
+      "status": "RESOLVED",
+      "isUrgent": false,
+      "responseMessage": "I'm moving my car right now! Please give me 2 minutes.",
+      "resolvedAt": "08:37 PM"
+    }
+  ],
+  "users": [
+    {
+      "id": "usr-8839786266",
+      "phone": "8839786266",
+      "name": "MohdEzaz",
+      "email": "mohdezaz@gmail.com",
+      "pincode": "485001",
+      "state": "Madhya Pradesh",
+      "city": "Satna",
+      "address": "Nazerabad satna lane no 6",
+      "medical": {
+        "bloodGroup": "O+ Positive",
+        "allergies": [
+          "None"
+        ]
+      },
+      "emergencyContacts": [],
+      "updatedAt": "2026-10-19T11:07:15.649Z",
+      "createdAt": "2026-10-19T09:50:53.795Z",
+      "status": "ACTIVE",
+      "freeCallsRemaining": 5
+    }
+  ],
+  "otps": {
+    "9876543210": {
+      "otp": "4321",
+      "createdAt": 1792244969437,
+      "expiresAt": 1792245569437
+    },
+    "8839786266": {
+      "otp": "1056",
+      "createdAt": 1792408031712,
+      "expiresAt": 1792408631712
+    }
+  },
+  "config": {
+    "helpline": {
+      "tollfree": "1800 555 7777",
+      "whatsapp": "+91 88397 86266",
+      "email": "support@safeqr.in",
+      "police": "112",
+      "ambulance": "108",
+      "appName": "SafeQR",
+      "tagline": "Smart Vehicle QR Protection Network"
+    },
+    "pricing": {
+      "starterTitle": "Starter Reflective Decal",
+      "starterSubtitle": "Personal Vehicle Single Shield",
+      "starterPrice": 249,
+      "starterOriginalPrice": 499,
+      "starterBadge": "POPULAR",
+      "starterFeatures": [
+        "1x Exterior Grade Reflective Decal",
+        "100% Number Masking Privacy",
+        "Instant SMS & WhatsApp Alert Dispatch",
+        "Emergency Medical Vault Integration",
+        "3 Years Outdoor UV Shield Warranty"
+      ],
+      "proTitle": "Pro Dual Holographic Shield",
+      "proSubtitle": "2x Dual Front & Rear Decals",
+      "proPrice": 499,
+      "proOriginalPrice": 999,
+      "proBadge": "BEST VALUE",
+      "proFeatures": [
+        "2x Dual Holographic Windshield Shields",
+        "Unlimited Masked Calling & Callback Hub",
+        "Accident & Wrong Parking Instant SOS",
+        "Priority IVR Virtual Number Routing",
+        "Lifetime Cloud Decal Replacement"
+      ],
+      "freeCallsAllowance": 5
+    },
+    "demoVideo": {
+      "title": "SafeQR 2.0 Explainer Video",
+      "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "description": "Exclusive vehicle safety and masked calling preview."
+    },
+    "banners": [
+      {
+        "borderColor": "#22C55E",
+        "id": "b1",
+        "iconColor": "#15803D",
+        "subtitle": "Everything updates live without APK reinstall.",
+        "iconBg": "#BBF7D0",
+        "badgeBg": "#DCFCE7",
+        "icon": "shield-cross / shield-plus",
+        "badgeColor": "#166534",
+        "badge": "? Live & Verified",
+        "imageUrl": "",
+        "title": "Instant Real-Time Sync\nVerified Live from Backend",
+        "isFullImage": true
+      },
+      {
+        "id": "b3",
+        "title": "New Safety Feature\\nFor Car Owners",
+        "subtitle": "Instant protection with SafeQR smart decaling.",
+        "badge": "✨ New Feature",
+        "badgeBg": "#DCFCE7",
+        "badgeColor": "#15803D",
+        "icon": "shield-check",
+        "iconBg": "#FEF9C3",
+        "iconColor": "#854D0E",
+        "borderColor": "#FEF08A",
+        "imageUrl": "",
+        "isFullImage": false
+      },
+      {
+        "id": "b4",
+        "title": "New Safety Feature\\nFor Car Owners",
+        "subtitle": "Instant protection with SafeQR smart decaling.",
+        "badge": "✨ New Feature",
+        "badgeBg": "#DCFCE7",
+        "badgeColor": "#15803D",
+        "icon": "shield-check",
+        "iconBg": "#FEF9C3",
+        "iconColor": "#854D0E",
+        "borderColor": "#FEF08A",
+        "imageUrl": "",
+        "isFullImage": false
+      }
+    ],
+    "onboarding": [
+      {
+        "id": "s1",
+        "title": "Blocked by a Wrongly\nParked Car?",
+        "subtitle": "Spot an issue and take quick action no arguments, no waiting.",
+        "imageUrl": "",
+        "isFullImage": false,
+        "buttonText": "Next"
+      },
+      {
+        "id": "s2",
+        "title": "Quick, Masked &\nDirect Calling",
+        "subtitle": "Connect instantly without sharing your personal number or privacy.",
+        "imageUrl": "",
+        "isFullImage": false,
+        "buttonText": "Next"
+      },
+      {
+        "id": "s3",
+        "title": "Your Details are Always\n100% Safe with Us",
+        "subtitle": "Smart QR technology protecting car owners across India.",
+        "imageUrl": "",
+        "isFullImage": false,
+        "buttonText": "Get Started"
+      }
+    ],
+    "paymentGateways": {
+      "activeGateway": "mock",
+      "testMode": true,
+      "currency": "INR",
+      "razorpay": {
+        "keyId": "rzp_test_sample123",
+        "keySecret": "rzp_sec_mock_456789",
+        "webhookSecret": "whsec_sample"
+      },
+      "cashfree": {
+        "appId": "TEST_CF_APP_8839",
+        "secretKey": "cfsk_ma_test_sample"
+      },
+      "stripe": {
+        "publishableKey": "pk_test_sample123456",
+        "secretKey": "sk_test_sample987654"
+      },
+      "upi": {
+        "vpa": "safeqr@okaxis",
+        "merchantName": "SafeQR Technologies India"
+      }
+    },
+    "otpServices": {
+      "activeSmsGateway": "mock",
+      "mockOtp": "1056",
+      "fast2sms": {
+        "apiKey": ""
+      },
+      "msg91": {
+        "authKey": "",
+        "senderId": "SAFEQR",
+        "templateId": ""
+      },
+      "twilio": {
+        "accountSid": "",
+        "authToken": "",
+        "fromNumber": ""
+      },
+      "emailSmtp": {
+        "host": "smtp.gmail.com",
+        "port": 587,
+        "user": "notifications@safeqr.in",
+        "pass": "••••••••",
+        "sender": "SafeQR Alerts <notifications@safeqr.in>",
+        "secure": false
+      }
+    }
+  },
+  "alerts": [],
+  "callLogs": [
+    {
+      "id": "call-1792407473527",
+      "type": "INCOMING",
+      "callerTitle": "Bystander Scanned QR",
+      "callerSub": "Bystander IVR Relay Call",
+      "phoneMasked": "+91 98*** *****",
+      "vehiclePlate": "MP-19-CA-1056",
+      "timestamp": "04:27 PM",
+      "timeAgo": "Just now",
+      "duration": "38s",
+      "status": "COMPLETED"
+    },
+    {
+      "id": "call-1792405902692",
+      "type": "INCOMING",
+      "callerTitle": "Bystander Scanned QR",
+      "callerSub": "Bystander IVR Relay Call",
+      "phoneMasked": "+91 98*** *****",
+      "vehiclePlate": "MP-19-CA-1056",
+      "timestamp": "04:01 PM",
+      "timeAgo": "Just now",
+      "duration": "38s",
+      "status": "COMPLETED"
+    },
+    {
+      "id": "call-1792404826418",
+      "type": "MISSED",
+      "callerTitle": "Bystander (Near Gate 2)",
+      "callerSub": "Scanned SafeQR Decal • Urgent Call",
+      "phoneMasked": "+91 98200 *****",
+      "vehiclePlate": "MP-19-CA-1056",
+      "timestamp": "03:43 PM",
+      "timeAgo": "Just Now",
+      "duration": "0s",
+      "status": "MISSED"
+    }
+  ]
+}
