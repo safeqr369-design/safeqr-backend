@@ -28,20 +28,63 @@ wss.on('connection', (ws, req) => {
     const role = url.searchParams.get('role'); // 'web' or 'app'
 
     if (callId) {
-      const call = activeCalls.get(callId);
-      if (call) {
-        if (role === 'web') call.webWs = ws;
-        if (role === 'app') call.appWs = ws;
+      let call = activeCalls.get(callId);
+      if (!call) {
+        call = {
+          id: callId,
+          status: 'CONNECTED',
+          webWs: null,
+          appWs: null,
+          pendingWebMsgs: [],
+          pendingAppMsgs: []
+        };
+        activeCalls.set(callId, call);
+      }
+      if (!call.pendingWebMsgs) call.pendingWebMsgs = [];
+      if (!call.pendingAppMsgs) call.pendingAppMsgs = [];
+
+      if (role === 'web') {
+        call.webWs = ws;
+        console.log(`[WS CALL] 🌐 Web client connected for call ${callId}`);
+        // Deliver all queued messages waiting for web
+        while (call.pendingWebMsgs.length > 0) {
+          const msg = call.pendingWebMsgs.shift();
+          try { ws.send(msg); } catch {}
+        }
+      } else if (role === 'app') {
+        call.appWs = ws;
+        console.log(`[WS CALL] 📱 App client connected for call ${callId}`);
+        // Deliver all queued messages waiting for app
+        while (call.pendingAppMsgs.length > 0) {
+          const msg = call.pendingAppMsgs.shift();
+          try { ws.send(msg); } catch {}
+        }
+      }
+
+      // Check if BOTH peers are connected and ready
+      if (call.webWs && call.webWs.readyState === 1 && call.appWs && call.appWs.readyState === 1) {
+        console.log(`[WS CALL] 🤝 Both peers ready for call ${callId}. Triggering PEERS_READY`);
+        try { call.webWs.send(JSON.stringify({ type: 'PEERS_READY' })); } catch {}
+        try { call.appWs.send(JSON.stringify({ type: 'PEERS_READY' })); } catch {}
       }
 
       ws.on('message', (message, isBinary) => {
         try {
           const currentCall = activeCalls.get(callId);
           const targetWs = (role === 'web') ? currentCall?.appWs : currentCall?.webWs;
-          if (targetWs && targetWs.readyState === 1) { // 1 = OPEN
+          if (targetWs && targetWs.readyState === 1) {
             targetWs.send(message, { binary: isBinary });
+          } else {
+            // Buffer message for disconnected/pending peer
+            if (role === 'web') {
+              currentCall?.pendingAppMsgs?.push(message.toString());
+            } else {
+              currentCall?.pendingWebMsgs?.push(message.toString());
+            }
           }
-        } catch {}
+        } catch (e) {
+          console.error('[WS CALL MSG ERR]', e.message);
+        }
       });
 
       ws.on('close', () => {
@@ -1659,6 +1702,7 @@ app.get(['/vehicle-number/:token', '/vehicle/:token', '/v/:token'], (req, res) =
 
     // WebRTC Peer Connection for Live Two-Way Voice
     let peerConn = null;
+    let webPendingCandidates = [];
     const rtcConfig = {
       iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
@@ -1668,7 +1712,31 @@ app.get(['/vehicle-number/:token', '/vehicle/:token', '/v/:token'], (req, res) =
       ]
     };
 
+    async function flushWebCandidates() {
+      if (!peerConn) return;
+      while (webPendingCandidates.length > 0) {
+        const c = webPendingCandidates.shift();
+        try {
+          await peerConn.addIceCandidate(new RTCIceCandidate(c));
+        } catch (e) {}
+      }
+    }
+
     function startWebRTCPeer() {
+      if (peerConn && peerConn.signalingState !== 'closed') {
+        // If already created, trigger offer renegotiation if needed
+        if (peerConn.signalingState === 'stable') {
+          peerConn.createOffer({ offerToReceiveAudio: true }).then(offer => {
+            return peerConn.setLocalDescription(offer);
+          }).then(() => {
+            if (callWs && callWs.readyState === 1) {
+              callWs.send(JSON.stringify({ type: 'OFFER', sdp: peerConn.localDescription }));
+            }
+          }).catch(function(){});
+        }
+        return;
+      }
+
       try {
         peerConn = new RTCPeerConnection(rtcConfig);
 
@@ -1688,18 +1756,22 @@ app.get(['/vehicle-number/:token', '/vehicle/:token', '/v/:token'], (req, res) =
           const remoteAudio = document.getElementById('webRemoteAudio');
           if (remoteAudio && event.streams && event.streams[0]) {
             remoteAudio.srcObject = event.streams[0];
+            remoteAudio.volume = 1.0;
+            remoteAudio.muted = false;
             remoteAudio.play().catch(function(){});
           }
         };
 
         // Create and send WebRTC Offer to vehicle owner app
         peerConn.createOffer({ offerToReceiveAudio: true }).then(offer => {
-          peerConn.setLocalDescription(offer).then(() => {
-            if (callWs && callWs.readyState === 1) {
-              callWs.send(JSON.stringify({ type: 'OFFER', sdp: peerConn.localDescription }));
-            }
-          });
-        }).catch(function(){});
+          return peerConn.setLocalDescription(offer);
+        }).then(() => {
+          if (callWs && callWs.readyState === 1) {
+            callWs.send(JSON.stringify({ type: 'OFFER', sdp: peerConn.localDescription }));
+          }
+        }).catch(function(err){
+          console.error('WebRTC offer error on web:', err);
+        });
       } catch (err) {
         console.error('WebRTC initialization failed on web:', err);
       }
@@ -1714,20 +1786,28 @@ app.get(['/vehicle-number/:token', '/vehicle/:token', '/v/:token'], (req, res) =
             const msg = JSON.parse(event.data);
             if (msg.type === 'CALL_ANSWERED') {
               handleCallAnswered();
+            } else if (msg.type === 'PEERS_READY') {
+              // Both web and app connected: start or send offer
+              startWebRTCPeer();
             } else if (msg.type === 'ANSWER') {
               if (peerConn && msg.sdp) {
                 await peerConn.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+                await flushWebCandidates();
               }
             } else if (msg.type === 'CANDIDATE') {
-              if (peerConn && msg.candidate) {
+              if (peerConn && peerConn.remoteDescription && peerConn.remoteDescription.type && msg.candidate) {
                 await peerConn.addIceCandidate(new RTCIceCandidate(msg.candidate));
+              } else if (msg.candidate) {
+                webPendingCandidates.push(msg.candidate);
               }
             } else if (msg.type === 'CALL_REJECTED') {
               handleCallRejected();
             } else if (msg.type === 'CALL_ENDED') {
               handleCallEnded();
             }
-          } catch {}
+          } catch (e) {
+            console.error('Signaling msg error:', e);
+          }
         };
       } catch {}
 
