@@ -500,11 +500,13 @@ class SafeQRDatabase {
   }
 
   getVehicleByToken(token) {
-    const cleanToken = token.trim();
+    if (!token) return null;
+    const cleanToken = token.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
     return this.data.vehicles.find(v => 
-      v.qrToken === cleanToken || 
-      v.registrationPlate.replace(/[^A-Za-z0-9]/g, '') === cleanToken.replace(/[^A-Za-z0-9]/g, '') ||
-      `VID-${v.registrationPlate.replace(/[^A-Za-z0-9]/g, '')}` === cleanToken
+      (v.qrToken && v.qrToken.toLowerCase() === token.trim().toLowerCase()) || 
+      (v.registrationPlate && v.registrationPlate.replace(/[^a-z0-9]/gi, '').toLowerCase() === cleanToken) ||
+      (v.id && v.id.toLowerCase() === token.trim().toLowerCase()) ||
+      (`vid-${(v.registrationPlate || '').replace(/[^a-z0-9]/gi, '').toLowerCase()}` === cleanToken)
     );
   }
 
