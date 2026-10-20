@@ -18,7 +18,7 @@
     let localStream = null;
     let ws = null;
     let isMuted = false;
-    let isSpeaker = true;
+    let isSpeaker = false; // Default to earpiece/normal receiver volume (not loudspeaker)
     let pendingCandidates = [];
 
     const remoteAudio = document.getElementById('remoteAudio');
@@ -87,7 +87,15 @@
                 pendingCandidates.push(msg.candidate);
               }
             } else if (msg.type === 'CALL_ENDED') {
+              log('Call ended by remote peer');
               stopCall();
+              if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
+                window.ReactNativeWebView.postMessage(JSON.stringify({
+                  type: 'CALL_ENDED',
+                  endedBy: msg.endedBy || 'remote',
+                  durationSeconds: msg.durationSeconds || 0
+                }));
+              }
             }
           }
         } catch (e) {

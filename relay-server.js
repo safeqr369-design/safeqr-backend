@@ -70,16 +70,36 @@ wss.on('connection', (ws, req) => {
 
       ws.on('message', (message, isBinary) => {
         try {
+          const strMsg = message.toString();
+          let parsed = null;
+          try { parsed = JSON.parse(strMsg); } catch {}
+
           const currentCall = activeCalls.get(callId);
+          if (parsed && parsed.type === 'CALL_ENDED') {
+            console.log(`[WS CALL_ENDED] 📴 Call ${callId} ended by ${role}`);
+            if (currentCall) {
+              currentCall.status = 'ENDED';
+              currentCall.endedAt = Date.now();
+              currentCall.endedBy = role;
+              if (currentCall.webWs && currentCall.webWs.readyState === 1) {
+                try { currentCall.webWs.send(JSON.stringify({ type: 'CALL_ENDED', callId, endedBy: role })); } catch {}
+              }
+              if (currentCall.appWs && currentCall.appWs.readyState === 1) {
+                try { currentCall.appWs.send(JSON.stringify({ type: 'CALL_ENDED', callId, endedBy: role })); } catch {}
+              }
+            }
+            return;
+          }
+
           const targetWs = (role === 'web') ? currentCall?.appWs : currentCall?.webWs;
           if (targetWs && targetWs.readyState === 1) {
             targetWs.send(message, { binary: isBinary });
           } else {
             // Buffer message for disconnected/pending peer
             if (role === 'web') {
-              currentCall?.pendingAppMsgs?.push(message.toString());
+              currentCall?.pendingAppMsgs?.push(strMsg);
             } else {
-              currentCall?.pendingWebMsgs?.push(message.toString());
+              currentCall?.pendingWebMsgs?.push(strMsg);
             }
           }
         } catch (e) {
@@ -90,8 +110,30 @@ wss.on('connection', (ws, req) => {
       ws.on('close', () => {
         const currentCall = activeCalls.get(callId);
         if (currentCall) {
-          if (role === 'web' && currentCall.webWs === ws) currentCall.webWs = null;
-          if (role === 'app' && currentCall.appWs === ws) currentCall.appWs = null;
+          if (role === 'web' && currentCall.webWs === ws) {
+            currentCall.webWs = null;
+            if (currentCall.status === 'CONNECTED' || currentCall.status === 'RINGING') {
+              currentCall.status = 'ENDED';
+              currentCall.endedAt = Date.now();
+              currentCall.endedBy = 'bystander';
+              console.log(`[WS DISCONNECT] Bystander closed tab for call ${callId}. Ending call on app.`);
+              if (currentCall.appWs && currentCall.appWs.readyState === 1) {
+                try { currentCall.appWs.send(JSON.stringify({ type: 'CALL_ENDED', callId, endedBy: 'bystander' })); } catch {}
+              }
+            }
+          }
+          if (role === 'app' && currentCall.appWs === ws) {
+            currentCall.appWs = null;
+            if (currentCall.status === 'CONNECTED' || currentCall.status === 'RINGING') {
+              currentCall.status = 'ENDED';
+              currentCall.endedAt = Date.now();
+              currentCall.endedBy = 'owner';
+              console.log(`[WS DISCONNECT] App closed for call ${callId}. Ending call on web.`);
+              if (currentCall.webWs && currentCall.webWs.readyState === 1) {
+                try { currentCall.webWs.send(JSON.stringify({ type: 'CALL_ENDED', callId, endedBy: 'owner' })); } catch {}
+              }
+            }
+          }
         }
       });
     }
@@ -1196,19 +1238,19 @@ app.get(['/vehicle-number/:token', '/vehicle/:token', '/v/:token'], (req, res) =
 
     .modal-close-btn { width: 100%; background: #374151; color: #FFFFFF; border: none; border-radius: 8px; padding: 12px; font-weight: 900; font-size: 12px; cursor: pointer; margin-top: 10px; }
 
-    /* Internet Voice Call Modal (WhatsApp style) */
-    .call-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0B0F17; z-index: 9999; flex-direction: column; align-items: center; justify-content: space-between; padding: 48px 24px 36px; }
-    .call-top-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(245, 158, 11, 0.15); border: 1px solid #F59E0B; color: #F59E0B; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 800; letter-spacing: 0.5px; }
-    .caller-avatar-wrap { position: relative; margin: 32px 0 20px; display: flex; align-items: center; justify-content: center; }
-    .caller-avatar { width: 110px; height: 110px; border-radius: 50%; background: linear-gradient(135deg, #1E293B, #0F172A); border: 3px solid #F59E0B; display: flex; align-items: center; justify-content: center; font-size: 48px; box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3); z-index: 2; }
-    .caller-ripple { position: absolute; width: 140px; height: 140px; border-radius: 50%; border: 2px solid rgba(245, 158, 11, 0.4); animation: callRipple 1.8s infinite ease-out; z-index: 1; }
-    .caller-ripple-2 { position: absolute; width: 170px; height: 170px; border-radius: 50%; border: 2px solid rgba(245, 158, 11, 0.2); animation: callRipple 1.8s infinite ease-out 0.6s; z-index: 1; }
-    @keyframes callRipple { 0% { transform: scale(0.8); opacity: 1; } 100% { transform: scale(1.3); opacity: 0; } }
-    .caller-name { font-size: 24px; font-weight: 900; color: #FFFFFF; margin-bottom: 6px; letter-spacing: 0.5px; }
-    .caller-plate { font-size: 15px; font-weight: 800; color: #F59E0B; letter-spacing: 1px; margin-bottom: 8px; }
-    .call-status { font-size: 13px; font-weight: 700; color: #94A3B8; margin-bottom: 24px; }
-    .call-status.active { color: #10B981; }
-    .call-status.declined { color: #EF4444; }
+    /* Internet Voice Call Modal (Modern WhatsApp / iOS Glassmorphism) */
+    .call-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 20%, #161D2B 0%, #0B0F17 80%); z-index: 9999; flex-direction: column; align-items: center; justify-content: space-between; padding: 52px 24px 44px; box-sizing: border-box; backdrop-filter: blur(24px); }
+    .call-top-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.4); color: #F59E0B; padding: 7px 16px; border-radius: 999px; font-size: 12px; font-weight: 800; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.1); }
+    .caller-avatar-wrap { position: relative; margin: 36px 0 24px; display: flex; align-items: center; justify-content: center; }
+    .caller-avatar { width: 116px; height: 116px; border-radius: 50%; background: linear-gradient(145deg, #1E293B, #0F172A); border: 3px solid #F59E0B; display: flex; align-items: center; justify-content: center; font-size: 48px; box-shadow: 0 12px 36px rgba(245, 158, 11, 0.28); z-index: 2; }
+    .caller-ripple { position: absolute; width: 148px; height: 148px; border-radius: 50%; border: 2px solid rgba(245, 158, 11, 0.35); animation: callRipple 2s infinite ease-out; z-index: 1; }
+    .caller-ripple-2 { position: absolute; width: 180px; height: 180px; border-radius: 50%; border: 2px solid rgba(245, 158, 11, 0.15); animation: callRipple 2s infinite ease-out 0.6s; z-index: 1; }
+    @keyframes callRipple { 0% { transform: scale(0.85); opacity: 1; } 100% { transform: scale(1.35); opacity: 0; } }
+    .caller-name { font-size: 26px; font-weight: 900; color: #FFFFFF; margin-bottom: 6px; letter-spacing: 0.5px; }
+    .caller-plate { display: inline-block; font-size: 14px; font-weight: 800; color: #F8FAFC; background: #1E293B; border: 1px solid #334155; padding: 4px 14px; border-radius: 6px; letter-spacing: 1.5px; margin-bottom: 12px; }
+    .call-status { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; color: #94A3B8; margin-bottom: 20px; }
+    .call-status.active { color: #10B981; font-weight: 800; }
+    .call-status.declined { color: #EF4444; font-weight: 800; }
     .wave-bars { display: flex; align-items: center; justify-content: center; gap: 6px; height: 36px; margin-bottom: 24px; }
     .wave-bar { width: 4px; height: 8px; background: #64748B; border-radius: 4px; transition: height 0.15s ease; }
     .wave-bars.active .wave-bar { background: #10B981; animation: soundWave 0.6s infinite ease-in-out alternate; }
@@ -1218,12 +1260,17 @@ app.get(['/vehicle-number/:token', '/vehicle/:token', '/v/:token'], (req, res) =
     .wave-bars.active .wave-bar:nth-child(4) { animation-delay: 0.2s; }
     .wave-bars.active .wave-bar:nth-child(5) { animation-delay: 0.4s; }
     @keyframes soundWave { 0% { height: 8px; } 100% { height: 32px; } }
-    .call-actions-row { display: flex; align-items: center; justify-content: center; gap: 24px; width: 100%; margin-top: auto; }
-    .call-round-btn { width: 58px; height: 58px; border-radius: 50%; background: #1E293B; border: 1px solid #334155; color: #F8FAFC; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; transition: all 0.15s; outline: none; }
+    .call-actions-row { display: flex; align-items: center; justify-content: center; gap: 32px; width: 100%; max-width: 360px; margin-top: auto; }
+    .call-ctrl-item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .call-round-btn { width: 62px; height: 62px; border-radius: 50%; background: #1E293B; border: 1.5px solid #334155; color: #F8FAFC; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); outline: none; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); }
+    .call-round-btn:hover { background: #334155; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4); }
     .call-round-btn:active { transform: scale(0.92); }
-    .call-round-btn.btn-end { width: 72px; height: 72px; background: #EF4444; border-color: #DC2626; color: #FFFFFF; font-size: 30px; box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4); }
-    .call-round-btn.active { background: #FFFFFF; color: #0F172A; }
-    .btn-lbl { font-size: 10px; font-weight: 700; margin-top: 4px; color: #94A3B8; }
+    .call-round-btn.active { background: #F8FAFC; border-color: #FFFFFF; color: #0F172A; box-shadow: 0 6px 20px rgba(255, 255, 255, 0.25); }
+    .call-round-btn.btn-end { width: 74px; height: 74px; background: #EF4444; border-color: #DC2626; color: #FFFFFF; box-shadow: 0 10px 28px rgba(239, 68, 68, 0.45); }
+    .call-round-btn.btn-end:hover { background: #DC2626; box-shadow: 0 12px 32px rgba(239, 68, 68, 0.6); }
+    .call-icon { width: 24px; height: 24px; }
+    .call-round-btn.btn-end .call-icon { width: 30px; height: 30px; }
+    .btn-lbl { font-size: 11px; font-weight: 700; color: #94A3B8; letter-spacing: 0.3px; }
   </style>
 </head>
 <body>
@@ -1343,16 +1390,41 @@ app.get(['/vehicle-number/:token', '/vehicle/:token', '/v/:token'], (req, res) =
 
     <div style="display: flex; flex-direction: column; align-items: center; width: 100%; gap: 16px;">
       <div class="call-actions-row">
-        <div style="text-align: center;">
-          <button id="btnMute" class="call-round-btn" onclick="toggleMute()">🎙️</button>
+        <div class="call-ctrl-item">
+          <button id="btnMute" class="call-round-btn" onclick="toggleMute()" title="Mute Microphone">
+            <svg id="svgMicOn" class="call-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="23"></line>
+              <line x1="8" y1="23" x2="16" y2="23"></line>
+            </svg>
+            <svg id="svgMicOff" class="call-icon" style="display: none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="1" y1="1" x2="23" y2="23"></line>
+              <path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"></path>
+              <path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"></path>
+              <line x1="12" y1="19" x2="12" y2="23"></line>
+              <line x1="8" y1="23" x2="16" y2="23"></line>
+            </svg>
+          </button>
           <div class="btn-lbl" id="muteLbl">Mute</div>
         </div>
-        <div style="text-align: center;">
-          <button class="call-round-btn btn-end" onclick="endInternetCall()">📵</button>
-          <div class="btn-lbl">End Call</div>
+
+        <div class="call-ctrl-item">
+          <button class="call-round-btn btn-end" onclick="endInternetCall()" title="End Voice Call">
+            <svg class="call-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08a.99.99 0 0 1 0-1.41C3.32 8.79 7.42 7 12 7s8.68 1.79 11.71 4.67c.39.39.39 1.02 0 1.41l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/>
+            </svg>
+          </button>
+          <div class="btn-lbl" style="color: #EF4444; font-weight: 800;">End Call</div>
         </div>
-        <div style="text-align: center;">
-          <button id="btnSpeaker" class="call-round-btn" onclick="toggleSpeaker()">🔊</button>
+
+        <div class="call-ctrl-item">
+          <button id="btnSpeaker" class="call-round-btn" onclick="toggleSpeaker()" title="Speaker / Volume Output">
+            <svg class="call-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
+          </button>
           <div class="btn-lbl" id="speakerLbl">Speaker</div>
         </div>
       </div>
@@ -1880,6 +1952,11 @@ app.get(['/vehicle-number/:token', '/vehicle/:token', '/v/:token'], (req, res) =
     function endInternetCall() {
       stopDialTone();
       if (currentCallId) {
+        if (callWs && callWs.readyState === 1) {
+          try {
+            callWs.send(JSON.stringify({ type: 'CALL_ENDED', callId: currentCallId, endedBy: 'bystander', durationSeconds: callSeconds }));
+          } catch {}
+        }
         fetch('/api/call/end', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -1893,15 +1970,21 @@ app.get(['/vehicle-number/:token', '/vehicle/:token', '/v/:token'], (req, res) =
       isMicMuted = !isMicMuted;
       const btn = document.getElementById('btnMute');
       const lbl = document.getElementById('muteLbl');
+      const svgOn = document.getElementById('svgMicOn');
+      const svgOff = document.getElementById('svgMicOff');
       if (isMicMuted) {
         btn.classList.add('active');
-        lbl.innerText = 'Unmute';
+        lbl.innerText = 'Muted';
+        if (svgOn) svgOn.style.display = 'none';
+        if (svgOff) svgOff.style.display = 'block';
         if (localStream) {
           localStream.getAudioTracks().forEach(t => { t.enabled = false; });
         }
       } else {
         btn.classList.remove('active');
         lbl.innerText = 'Mute';
+        if (svgOn) svgOn.style.display = 'block';
+        if (svgOff) svgOff.style.display = 'none';
         if (localStream) {
           localStream.getAudioTracks().forEach(t => { t.enabled = true; });
         }
@@ -1914,14 +1997,14 @@ app.get(['/vehicle-number/:token', '/vehicle/:token', '/v/:token'], (req, res) =
       const lbl = document.getElementById('speakerLbl');
       const remoteAudio = document.getElementById('webRemoteAudio');
       if (remoteAudio) {
-        remoteAudio.volume = isSpeakerOn ? 1.0 : 0.3;
+        remoteAudio.volume = isSpeakerOn ? 1.0 : 0.4;
       }
-      if (!isSpeakerOn) {
+      if (isSpeakerOn) {
         btn.classList.add('active');
-        lbl.innerText = 'Earpiece';
+        lbl.innerText = 'Speaker ON';
       } else {
         btn.classList.remove('active');
-        lbl.innerText = 'Speaker';
+        lbl.innerText = 'Normal';
       }
     }
 
