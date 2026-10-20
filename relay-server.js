@@ -939,6 +939,15 @@ app.post('/api/call/initiate', (req, res) => {
     ownerName: 'MohdEzaz'
   };
 
+  // Clean up any stale ringing calls for this vehicle plate
+  for (const [existingId, existingCall] of activeCalls.entries()) {
+    if (existingCall.cleanPlate === cleanPlate && existingCall.status === 'RINGING') {
+      existingCall.status = 'ENDED';
+      existingCall.endedAt = Date.now();
+      existingCall.endedBy = 'system_new_call';
+    }
+  }
+
   const callId = `call-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
   const callSession = {
     id: callId,
@@ -968,12 +977,15 @@ app.post('/api/call/initiate', (req, res) => {
 
 app.get('/api/call/active', (req, res) => {
   const plate = (req.query.plate || '').replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+  let latestCall = null;
   for (const [id, call] of activeCalls.entries()) {
     if ((!plate || call.cleanPlate === plate) && (call.status === 'RINGING' || call.status === 'CONNECTED')) {
-      return res.json({ success: true, activeCall: call });
+      if (!latestCall || call.createdAt > latestCall.createdAt) {
+        latestCall = call;
+      }
     }
   }
-  res.json({ success: true, activeCall: null });
+  res.json({ success: true, activeCall: latestCall });
 });
 
 app.get('/api/call/status/:callId', (req, res) => {
@@ -986,6 +998,9 @@ app.post('/api/call/answer', (req, res) => {
   const { callId } = req.body;
   const call = activeCalls.get(callId);
   if (!call) return res.status(404).json({ success: false, error: 'Call session not found' });
+  if (call.status === 'ENDED' || call.status === 'REJECTED') {
+    return res.status(400).json({ success: false, error: 'Call has already ended' });
+  }
   call.status = 'CONNECTED';
   call.connectedAt = Date.now();
 
@@ -1050,6 +1065,11 @@ app.post('/api/call/end', (req, res) => {
       status: duration > 0 ? 'COMPLETED' : 'MISSED'
     });
     console.log(`[CALL ENDED] ⏹️ Call ${callId} ended by ${endedBy} (Duration: ${durStr})`);
+    setTimeout(() => {
+      if (activeCalls.get(callId)?.status === 'ENDED') {
+        activeCalls.delete(callId);
+      }
+    }, 15000);
   }
   res.json({ success: true });
 });
