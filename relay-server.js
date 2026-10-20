@@ -34,6 +34,9 @@ function getPublicHost(req) {
   if (process.env.RENDER_EXTERNAL_URL) {
     return process.env.RENDER_EXTERNAL_URL.replace(/^https?:\/\//, '');
   }
+  if (process.env.RENDER || PORT == 10000) {
+    return 'safeqr-backend-o13q.onrender.com';
+  }
   if (req && req.get('host')) return req.get('host');
   return `${LOCAL_IP}:${PORT}`;
 }
@@ -41,6 +44,9 @@ function getPublicHost(req) {
 function getBaseUrl(req) {
   if (process.env.RENDER_EXTERNAL_URL) {
     return process.env.RENDER_EXTERNAL_URL.replace(/\/$/, '');
+  }
+  if (process.env.RENDER || PORT == 10000) {
+    return 'https://safeqr-backend-o13q.onrender.com';
   }
   const host = getPublicHost(req);
   const proto = req ? (req.headers['x-forwarded-proto'] || req.protocol || 'http') : 'http';
@@ -1300,12 +1306,15 @@ app.get(['/v/:token', '/v'], (req, res) => {
 
 // Start Server
 app.listen(PORT, HOST, () => {
-  const currentIVR = db.getSettings().companyIVRRelayNumber || '+9118002029900';
+  const currentIVR = db.getSettings().companyIVRRelayNumber || '+919300092225';
+  const displayBase = process.env.RENDER_EXTERNAL_URL 
+    || (process.env.RENDER || PORT == 10000 ? 'https://safeqr-backend-o13q.onrender.com' : `http://${LOCAL_IP}:${PORT}`);
+
   console.log(`================================================================`);
-  console.log(` 🛡️ SAFEQR UNIFIED PLATFORM ACTIVE ON PORT ${PORT}`);
-  console.log(` 🌐 Public Marketing & Purchase Site: http://${LOCAL_IP}:${PORT}/`);
-  console.log(` ⚙️ Admin Management Command Center: http://${LOCAL_IP}:${PORT}/admin`);
-  console.log(` 📱 Bystander Scan Portal (Live QR):  http://${LOCAL_IP}:${PORT}/v`);
+  console.log(` 🛡️ SAFEQR UNIFIED CLOUD PLATFORM ACTIVE ON PORT ${PORT}`);
+  console.log(` 🌐 Public Marketing & Purchase Site: ${displayBase}/`);
+  console.log(` ⚙️ Admin Management Command Center: ${displayBase}/admin`);
+  console.log(` 📱 Bystander Scan Portal (Live QR):  ${displayBase}/v/`);
   console.log(` 📞 Company IVR Virtual Helpline:    ${currentIVR}`);
   console.log(`================================================================`);
 });
