@@ -195,6 +195,15 @@ app.get('/admin', (req, res) => {
   res.send('Admin Dashboard template missing.');
 });
 
+// Real-time VoIP WebRTC In-App Audio Bridge
+app.get('/call-bridge.html', (req, res) => {
+  const filePath = path.join(__dirname, 'views', 'call-bridge.html');
+  if (fs.existsSync(filePath)) {
+    return res.sendFile(filePath);
+  }
+  res.status(404).send('Call bridge template missing.');
+});
+
 // ----------------------------------------------------
 // 3. USER AUTHENTICATION (MOBILE OTP), PROFILE & ADMIN
 // ----------------------------------------------------
@@ -1267,6 +1276,7 @@ app.get(['/vehicle-number/:token', '/vehicle/:token', '/v/:token'], (req, res) =
 
   <!-- WhatsApp Style Voice Calling Overlay -->
   <div id="internetCallModal" class="call-overlay">
+    <audio id="webRemoteAudio" autoplay playsinline></audio>
     <div class="call-top-badge">🛡️ SafeQR Masked Voice Relay</div>
     
     <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
@@ -1647,15 +1657,71 @@ app.get(['/vehicle-number/:token', '/vehicle/:token', '/v/:token'], (req, res) =
       }
     }
 
+    // WebRTC Peer Connection for Live Two-Way Voice
+    let peerConn = null;
+    const rtcConfig = {
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        { urls: 'stun:stun2.l.google.com:19302' },
+        { urls: 'stun:global.stun.twilio.com:3478' }
+      ]
+    };
+
+    function startWebRTCPeer() {
+      try {
+        peerConn = new RTCPeerConnection(rtcConfig);
+
+        if (localStream) {
+          localStream.getAudioTracks().forEach(track => {
+            peerConn.addTrack(track, localStream);
+          });
+        }
+
+        peerConn.onicecandidate = (event) => {
+          if (event.candidate && callWs && callWs.readyState === 1) {
+            callWs.send(JSON.stringify({ type: 'CANDIDATE', candidate: event.candidate }));
+          }
+        };
+
+        peerConn.ontrack = (event) => {
+          const remoteAudio = document.getElementById('webRemoteAudio');
+          if (remoteAudio && event.streams && event.streams[0]) {
+            remoteAudio.srcObject = event.streams[0];
+            remoteAudio.play().catch(function(){});
+          }
+        };
+
+        // Create and send WebRTC Offer to vehicle owner app
+        peerConn.createOffer({ offerToReceiveAudio: true }).then(offer => {
+          peerConn.setLocalDescription(offer).then(() => {
+            if (callWs && callWs.readyState === 1) {
+              callWs.send(JSON.stringify({ type: 'OFFER', sdp: peerConn.localDescription }));
+            }
+          });
+        }).catch(function(){});
+      } catch (err) {
+        console.error('WebRTC initialization failed on web:', err);
+      }
+    }
+
     function connectCallSignaling(callId) {
       try {
         const wsProto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         callWs = new WebSocket(wsProto + '//' + window.location.host + '/ws/call?callId=' + callId + '&role=web');
-        callWs.onmessage = function(event) {
+        callWs.onmessage = async function(event) {
           try {
             const msg = JSON.parse(event.data);
             if (msg.type === 'CALL_ANSWERED') {
               handleCallAnswered();
+            } else if (msg.type === 'ANSWER') {
+              if (peerConn && msg.sdp) {
+                await peerConn.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+              }
+            } else if (msg.type === 'CANDIDATE') {
+              if (peerConn && msg.candidate) {
+                await peerConn.addIceCandidate(new RTCIceCandidate(msg.candidate));
+              }
             } else if (msg.type === 'CALL_REJECTED') {
               handleCallRejected();
             } else if (msg.type === 'CALL_ENDED') {
@@ -1693,6 +1759,7 @@ app.get(['/vehicle-number/:token', '/vehicle/:token', '/v/:token'], (req, res) =
 
     function handleCallAnswered() {
       stopDialTone();
+      startWebRTCPeer();
       const statusText = document.getElementById('callStatusText');
       const waveBars = document.getElementById('waveBars');
       statusText.className = 'call-status active';
@@ -1765,6 +1832,10 @@ app.get(['/vehicle-number/:token', '/vehicle/:token', '/v/:token'], (req, res) =
       isSpeakerOn = !isSpeakerOn;
       const btn = document.getElementById('btnSpeaker');
       const lbl = document.getElementById('speakerLbl');
+      const remoteAudio = document.getElementById('webRemoteAudio');
+      if (remoteAudio) {
+        remoteAudio.volume = isSpeakerOn ? 1.0 : 0.3;
+      }
       if (!isSpeakerOn) {
         btn.classList.add('active');
         lbl.innerText = 'Earpiece';
@@ -1776,6 +1847,10 @@ app.get(['/vehicle-number/:token', '/vehicle/:token', '/v/:token'], (req, res) =
 
     function closeInternetCallModal() {
       stopDialTone();
+      if (peerConn) {
+        peerConn.close();
+        peerConn = null;
+      }
       if (localStream) {
         localStream.getTracks().forEach(t => t.stop());
         localStream = null;
